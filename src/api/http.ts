@@ -1,0 +1,84 @@
+import axios from 'axios'
+import type { TokenPairEnvelope } from './types'
+import { tokenStorage } from '@/auth/tokenStorage'
+
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    __isRetryRequest?: boolean
+  }
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+
+export const http = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+const refreshClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+const requestNewTokens = async () => {
+  const refreshToken = tokenStorage.getTokens()?.refreshToken
+  if (!refreshToken) {
+    return null
+  }
+
+  try {
+    const { data } = await refreshClient.post<TokenPairEnvelope>(
+      '/api/v1/auth/refresh',
+      { refreshToken },
+    )
+    return data.data ?? null
+  } catch {
+    return null
+  }
+}
+
+http.interceptors.request.use((config) => {
+  const accessToken = tokenStorage.getTokens()?.accessToken
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  }
+  return config
+})
+
+let refreshPromise: Promise<string | null> | null = null
+
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { response, config } = error
+    if (response?.status !== 401 || config.__isRetryRequest) {
+      return Promise.reject(error)
+    }
+
+    if (!refreshPromise) {
+      refreshPromise = (async () => {
+        const tokenPair = await requestNewTokens()
+        if (!tokenPair) {
+          tokenStorage.clear()
+          return null
+        }
+        tokenStorage.setTokens(tokenPair)
+        return tokenPair.accessToken ?? null
+      })()
+    }
+
+    const newAccessToken = await refreshPromise
+    if (!newAccessToken) {
+      return Promise.reject(error)
+    }
+
+    config.__isRetryRequest = true
+    config.headers.Authorization = `Bearer ${newAccessToken}`
+    return http(config)
+  },
+)
+
