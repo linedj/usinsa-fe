@@ -4,6 +4,12 @@ export type LoginRequest = components['schemas']['LoginReq']
 export type LoginEnvelope = components['schemas']['RsDataLoginRes']
 export type LoginPayload = components['schemas']['LoginRes']
 
+export type SignUpRequest = components['schemas']['SignUpReq']
+export type SignUpEnvelope = components['schemas']['RsDataVoid']
+
+export type OAuthLoginRequest = components['schemas']['OAuthLoginReq']
+export type OAuthLoginEnvelope = components['schemas']['RsDataLoginRes']
+
 export type TokenPair = components['schemas']['TokenPair']
 export type TokenPairEnvelope = components['schemas']['RsDataTokenPair']
 
@@ -17,4 +23,3 @@ export type ApiSuccessResponse<T> = {
   error?: ErrorDetail
   data?: T
 }
-

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useMemo, useState } from 'react'
 import { authApi } from '@/api/authApi'
-import type { LoginPayload, LoginRequest, TokenPair } from '@/api/types'
+import type { LoginPayload, LoginRequest, TokenPair, SignUpRequest, OAuthLoginRequest } from '@/api/types'
 import { tokenStorage, type AuthTokens, type StoredAuth } from './tokenStorage'
 
 type AuthContextValue = {
@@ -10,6 +10,9 @@ type AuthContextValue = {
   loading: boolean
   error: string | null
   login: (payload: LoginRequest) => Promise<void>
+  signup: (payload: SignUpRequest) => Promise<void>
+  oauthLogin: (payload: OAuthLoginRequest) => Promise<void>
+  redirectToOauth: (provider: 'google' | 'kakao' | 'naver') => void
   logout: () => Promise<void>
   refreshTokens: () => Promise<void>
 }
@@ -23,6 +26,9 @@ export const AuthContext = createContext<AuthContextValue>({
   loading: false,
   error: null,
   async login() {},
+  async signup() {},
+  async oauthLogin() {},
+  redirectToOauth: () => {},
   async logout() {},
   async refreshTokens() {},
 })
@@ -66,6 +72,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [])
 
+  const signup = useCallback(async (payload: SignUpRequest) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await authApi.signup(payload)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const oauthLogin = useCallback(async (payload: OAuthLoginRequest) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const loginResponse = await authApi.oauthLogin(payload)
+      const tokensFromLogin = toTokenPair(loginResponse)
+      tokenStorage.hydrate(loginResponse, tokensFromLogin)
+      updateState(tokenStorage.getSnapshot())
+    } catch (err) {
+      tokenStorage.clear()
+      updateState(tokenStorage.getSnapshot())
+      setError(err instanceof Error ? err.message : 'OAuth 로그인에 실패했습니다.')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const redirectToOauth = useCallback((provider: 'google' | 'kakao' | 'naver') => {
+    authApi.redirectToOauth(provider)
+  }, [])
+
   const logout = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -105,10 +146,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loading,
       error,
       login,
+      signup,
+      oauthLogin,
+      redirectToOauth,
       logout,
       refreshTokens,
     }),
-    [snapshot, loading, error, login, logout, refreshTokens],
+    [snapshot, loading, error, login, signup, oauthLogin, redirectToOauth, logout, refreshTokens],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -4,6 +4,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { LoginPage } from '@/pages/LoginPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import './App.css'
+import { SignUpPage } from '@/pages/SignUpPage'
+import { OauthCallbackPage } from '@/pages/OauthCallbackPage'
+import { ApiTestPage } from '@/pages/ApiTestPage'
 
 function App() {
   return (
@@ -11,11 +14,21 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/oauth/callback/:provider" element={<OauthCallbackPage />} />
           <Route
             path="/"
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/api-test"
+            element={
+              <ProtectedRoute>
+                <ApiTestPage />
               </ProtectedRoute>
             }
           />

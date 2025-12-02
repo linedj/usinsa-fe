@@ -13,7 +13,10 @@ export default defineConfig({
   },
   server: {
     fs: {
-      allow: [resolve(__dirname, 'libs')],
+      allow: [
+        resolve(__dirname),
+        resolve(__dirname, 'libs')
+      ],
     },
     proxy: process.env.VITE_API_PROXY
       ? {
