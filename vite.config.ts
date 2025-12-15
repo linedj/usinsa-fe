@@ -20,11 +20,11 @@ export default defineConfig({
     },
     proxy: process.env.VITE_API_PROXY
       ? {
-          '/api': {
-            target: process.env.VITE_API_PROXY,
-            changeOrigin: true,
-          },
-        }
+        '/api': {
+          target: process.env.VITE_API_PROXY,
+          changeOrigin: true,
+        },
+      }
       : undefined,
   },
 })

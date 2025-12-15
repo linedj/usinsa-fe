@@ -14,7 +14,7 @@ import type {
 } from './types'
 
 const unwrapResponse = <T>(envelope: { success?: boolean; data?: T; error?: { message?: string } }) => {
-  if (!envelope.success || !envelope.data) {
+  if (!envelope.success) {
     throw new Error(envelope.error?.message ?? '요청이 실패했습니다.')
   }
   return envelope.data
@@ -23,15 +23,25 @@ const unwrapResponse = <T>(envelope: { success?: boolean; data?: T; error?: { me
 export const authApi = {
   async login(payload: LoginRequest): Promise<LoginPayload> {
     const { data } = await http.post<LoginEnvelope>('/api/v1/auth/login', payload)
-    return unwrapResponse<LoginPayload>(data)
+    const result = unwrapResponse<LoginPayload>(data)
+    if (!result) {
+      throw new Error('로그인 응답 데이터가 없습니다.')
+    }
+    return result
   },
   async signup(payload: SignUpRequest): Promise<void> {
     const { data } = await http.post<SignUpEnvelope>('/api/v1/auth/signup', payload)
-    unwrapResponse<void>(data)
+    if (!data.success) {
+      throw new Error(data.error?.message ?? '회원가입에 실패했습니다.')
+    }
   },
   async oauthLogin(payload: OAuthLoginRequest): Promise<LoginPayload> {
     const { data } = await http.post<OAuthLoginEnvelope>('/api/v1/auth/oauth/login', payload)
-    return unwrapResponse<LoginPayload>(data)
+    const result = unwrapResponse<LoginPayload>(data)
+    if (!result) {
+      throw new Error('OAuth 로그인 응답 데이터가 없습니다.')
+    }
+    return result
   },
   redirectToOauth(provider: 'google' | 'kakao' | 'naver') {
     try {
@@ -60,7 +70,10 @@ export const authApi = {
     const { data } = await http.post<TokenPairEnvelope>('/api/v1/auth/refresh', {
       refreshToken: token,
     })
-    return unwrapResponse<TokenPair>(data)
+    const result = unwrapResponse<TokenPair>(data)
+    if (!result) {
+      throw new Error('토큰 갱신 응답 데이터가 없습니다.')
+    }
+    return result
   },
 }
-
