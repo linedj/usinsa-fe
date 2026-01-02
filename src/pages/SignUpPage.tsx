@@ -21,7 +21,13 @@ export const SignUpPage = () => {
       return
     }
     try {
-      await signup({ email, password, name, nickname })
+      await signup({
+        email,
+        password,
+        passwordConfirm: confirmPassword,
+        name,
+        nickname
+      })
       navigate('/login')
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : '회원가입 실패')

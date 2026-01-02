@@ -60,28 +60,39 @@ export type ProductOptionResponse = {
 export type CartCreateRequest = {
   memberId: number
   productOptionId: number
-  quantity: number
+  count: number
 }
 
 export type CartGuestCreateRequest = {
   productOptionId: number
-  quantity: number
+  count: number
 }
 
 export type CartUpdateRequest = {
-  quantity: number
+  count: number
+}
+
+export type ProductInfo = {
+  productId: number
+  productName: string
+  brandName: string
+  price: number
+  optionName: string
+  stock: number | null
 }
 
 export type CartResponse = {
   id: number
-  memberId?: number
-  sessionId?: string
+  memberId?: number | null
+  sessionId?: string | null
   productOptionId: number
-  productName: string
-  optionSize: string
-  optionColor: string
-  quantity: number
-  price: number
+  count: number
+  guest: boolean
+  productInfo: ProductInfo
+}
+
+// Computed cart properties for UI
+export type CartItem = CartResponse & {
   totalPrice: number
 }
 

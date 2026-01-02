@@ -43,12 +43,12 @@ export default function ProductDetailPage() {
         await cartApi.createCart({
           memberId: user.memberId,
           productOptionId: product.id,
-          quantity,
+          count: quantity,
         })
       } else {
         await cartApi.createGuestCart({
           productOptionId: product.id,
-          quantity,
+          count: quantity,
         })
       }
       
@@ -77,7 +77,7 @@ export default function ProductDetailPage() {
       await cartApi.createCart({
         memberId: user.memberId!,
         productOptionId: product.id,
-        quantity,
+        count: quantity,
       })
       
       navigate('/checkout')
@@ -125,7 +125,7 @@ export default function ProductDetailPage() {
               <span className="text-gray-400 text-xl">이미지 없음</span>
             </div>
             
-            {/* 썸네일 이미지 (향후 추가 가능) */}
+            {/* 썸네일 이미지 */}
             <div className="grid grid-cols-4 gap-2 mt-4">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-square bg-gray-100 rounded-lg"></div>
@@ -135,21 +135,14 @@ export default function ProductDetailPage() {
 
           {/* 상품 정보 */}
           <div className="flex flex-col">
-            {/* 브랜드 */}
             <div className="text-sm text-blue-600 font-semibold mb-2">{product.brandName}</div>
-            
-            {/* 상품명 */}
             <h1 className="text-3xl lg:text-4xl font-bold mb-3">{product.name}</h1>
-            
-            {/* 카테고리 */}
             <div className="text-sm text-gray-600 mb-6">{product.categoryName}</div>
             
-            {/* 가격 */}
             <div className="text-4xl font-bold text-blue-600 mb-6">
               {product.price?.toLocaleString()}원
             </div>
             
-            {/* 통계 */}
             <div className="flex gap-6 mb-8 pb-8 border-b">
               <div className="flex items-center gap-2">
                 <span className="text-red-500">❤️</span>
@@ -161,9 +154,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 상품 옵션 */}
             <div className="space-y-6 mb-8">
-              {/* 수량 선택 */}
               <div>
                 <label className="block font-semibold mb-3 text-lg">수량</label>
                 <div className="flex items-center gap-3">
@@ -190,7 +181,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* 배송 정보 */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -204,7 +194,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* 총 금액 */}
               <div className="bg-blue-50 rounded-lg p-6">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">총 상품금액</span>
@@ -220,7 +209,6 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 버튼들 */}
             <div className="space-y-3">
               <button
                 onClick={handleBuyNow}
@@ -248,7 +236,6 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* 상품 상세 정보 */}
         <div className="mt-16 border-t pt-12">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-center">상품 상세 정보</h2>
@@ -270,7 +257,6 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* 상품 정보 고시 */}
             <div className="bg-white border rounded-lg p-6">
               <h3 className="text-xl font-bold mb-4">상품 정보</h3>
               <div className="space-y-2 text-sm">

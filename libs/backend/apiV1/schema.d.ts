@@ -148,6 +148,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/{productId}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getLikeStatus"];
+        put?: never;
+        post: operations["addLike"];
+        delete: operations["removeLike"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products/reindex": {
         parameters: {
             query?: never;
@@ -308,6 +324,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["signup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/refresh": {
         parameters: {
             query?: never;
@@ -396,6 +428,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getUserSearchHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{productId}/like/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getLikeCount"];
         put?: never;
         post?: never;
         delete?: never;
@@ -496,12 +544,26 @@ export interface components {
             /** Format: int32 */
             count?: number;
         };
-        RefreshReq: {
-            refreshToken?: string;
+        SignupReq: {
+            email: string;
+            password: string;
+            passwordConfirm: string;
+            name: string;
+            nickname: string;
         };
         ErrorDetail: {
             code?: string;
             message?: string;
+        };
+        RsDataVoid: {
+            success?: boolean;
+            /** Format: int32 */
+            status?: number;
+            error?: components["schemas"]["ErrorDetail"];
+            data?: Record<string, never>;
+        };
+        RefreshReq: {
+            refreshToken?: string;
         };
         RsDataTokenPair: {
             success?: boolean;
@@ -517,13 +579,6 @@ export interface components {
             accessExpEpochSec?: number;
             /** Format: int64 */
             refreshExpEpochSec?: number;
-        };
-        RsDataVoid: {
-            success?: boolean;
-            /** Format: int32 */
-            status?: number;
-            error?: components["schemas"]["ErrorDetail"];
-            data?: Record<string, never>;
         };
         LoginReq: {
             email?: string;
@@ -561,6 +616,11 @@ export interface components {
             likeCount?: number;
             /** Format: int32 */
             clickCount?: number;
+        };
+        StatusResponse: {
+            /** Format: int64 */
+            productId?: number;
+            liked?: boolean;
         };
     };
     responses: never;
@@ -1029,6 +1089,78 @@ export interface operations {
             };
         };
     };
+    getLikeStatus: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StatusResponse"];
+                };
+            };
+        };
+    };
+    addLike: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
+    removeLike: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
     rebuildIndex: {
         parameters: {
             query?: never;
@@ -1419,6 +1551,30 @@ export interface operations {
             };
         };
     };
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignupReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataVoid"];
+                };
+            };
+        };
+    };
     refresh: {
         parameters: {
             query?: never;
@@ -1548,6 +1704,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": string[];
+                };
+            };
+        };
+    };
+    getLikeCount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": number;
                 };
             };
         };

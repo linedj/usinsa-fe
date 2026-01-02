@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { cartApi } from '@/api/cartApi'
-import type { CartResponse } from '@/api/types'
+import type { CartItem } from '@/api/types'
 import { useAuth } from '@/auth/useAuth'
 import { useNavigate } from 'react-router-dom'
 
 export default function CartPage() {
-  const [carts, setCarts] = useState<CartResponse[]>([])
+  const [carts, setCarts] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
@@ -18,13 +18,10 @@ export default function CartPage() {
   const loadCarts = async () => {
     try {
       setLoading(true)
-      if (user?.memberId) {
-        const data = await cartApi.getMemberCarts(user.memberId)
-        setCarts(data)
-      } else {
-        const data = await cartApi.getGuestCarts()
-        setCarts(data)
-      }
+      const data = user?.memberId 
+        ? await cartApi.getMemberCarts(user.memberId)
+        : await cartApi.getGuestCarts()
+      setCarts(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : '장바구니를 불러오는데 실패했습니다.')
     } finally {
@@ -32,11 +29,11 @@ export default function CartPage() {
     }
   }
 
-  const handleUpdateQuantity = async (cartId: number, newQuantity: number) => {
-    if (newQuantity < 1) return
+  const handleUpdateQuantity = async (cartId: number, newCount: number) => {
+    if (newCount < 1) return
     
     try {
-      await cartApi.updateCart(cartId, { quantity: newQuantity })
+      await cartApi.updateCart(cartId, { count: newCount })
       await loadCarts()
     } catch (err) {
       alert(err instanceof Error ? err.message : '수량 변경에 실패했습니다.')
@@ -84,7 +81,8 @@ export default function CartPage() {
     navigate('/checkout')
   }
 
-  const totalAmount = carts.reduce((sum, cart) => sum + (cart.totalPrice || 0), 0)
+  const totalAmount = carts.reduce((sum, cart) => sum + cart.totalPrice, 0)
+  const totalCount = carts.reduce((sum, cart) => sum + cart.count, 0)
 
   if (loading) {
     return (
@@ -141,13 +139,16 @@ export default function CartPage() {
 
                   {/* 상품 정보 */}
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2">{cart.productName}</h3>
+                    <div className="text-sm text-gray-500 mb-1">{cart.productInfo.brandName}</div>
+                    <h3 className="font-semibold text-lg mb-2">{cart.productInfo.productName}</h3>
                     <div className="text-sm text-gray-600 mb-3">
-                      <span className="mr-4">사이즈: {cart.optionSize}</span>
-                      <span>색상: {cart.optionColor}</span>
+                      <span>옵션: {cart.productInfo.optionName}</span>
+                      {cart.productInfo.stock !== null && (
+                        <span className="ml-4 text-gray-500">재고: {cart.productInfo.stock}개</span>
+                      )}
                     </div>
                     <div className="text-lg font-bold text-blue-600">
-                      {cart.price?.toLocaleString()}원
+                      {cart.productInfo.price.toLocaleString()}원
                     </div>
                   </div>
 
@@ -156,6 +157,7 @@ export default function CartPage() {
                     <button
                       onClick={() => handleDelete(cart.id)}
                       className="text-gray-400 hover:text-red-600 text-xl"
+                      aria-label="삭제"
                     >
                       ✕
                     </button>
@@ -163,23 +165,25 @@ export default function CartPage() {
                     <div className="flex flex-col items-end gap-4">
                       <div className="flex items-center gap-2 border rounded">
                         <button
-                          onClick={() => handleUpdateQuantity(cart.id, cart.quantity - 1)}
-                          disabled={cart.quantity <= 1}
+                          onClick={() => handleUpdateQuantity(cart.id, cart.count - 1)}
+                          disabled={cart.count <= 1}
                           className="w-9 h-9 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                          aria-label="수량 감소"
                         >
                           -
                         </button>
-                        <span className="w-12 text-center font-semibold">{cart.quantity}</span>
+                        <span className="w-12 text-center font-semibold">{cart.count}</span>
                         <button
-                          onClick={() => handleUpdateQuantity(cart.id, cart.quantity + 1)}
+                          onClick={() => handleUpdateQuantity(cart.id, cart.count + 1)}
                           className="w-9 h-9 hover:bg-gray-100"
+                          aria-label="수량 증가"
                         >
                           +
                         </button>
                       </div>
 
                       <div className="text-xl font-bold">
-                        {cart.totalPrice?.toLocaleString()}원
+                        {cart.totalPrice.toLocaleString()}원
                       </div>
                     </div>
                   </div>
@@ -200,7 +204,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>총 수량</span>
-                  <span>{carts.reduce((sum, cart) => sum + cart.quantity, 0)}개</span>
+                  <span>{totalCount}개</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>상품 금액</span>
