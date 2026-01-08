@@ -1,5 +1,12 @@
 import { http } from './http'
-import type { ProductResponse, ProductCreateRequest, ProductOptionResponse, ProductOptionCreateRequest } from './types'
+import type { 
+  ProductResponse, 
+  ProductCreateRequest, 
+  ProductOptionResponse, 
+  ProductOptionCreateRequest,
+  ProductLikeResponse,
+  ProductLikeStatusResponse
+} from './types'
 
 // 백엔드 Product/Cart API는 RsData 래퍼 없이 직접 데이터를 반환합니다
 export const productApi = {
@@ -58,6 +65,48 @@ export const productApi = {
    */
   async reindexProducts(): Promise<string> {
     const { data } = await http.post<string>('/api/v1/products/reindex')
+    return data
+  },
+
+  /**
+   * 좋아요 추가
+   */
+  async addLike(productId: number, memberId: number): Promise<ProductLikeResponse> {
+    const { data } = await http.post<ProductLikeResponse>(
+      `/api/v1/products/${productId}/like`,
+      null,
+      { params: { memberId } }
+    )
+    return data
+  },
+
+  /**
+   * 좋아요 취소
+   */
+  async removeLike(productId: number, memberId: number): Promise<ProductLikeResponse> {
+    const { data } = await http.delete<ProductLikeResponse>(
+      `/api/v1/products/${productId}/like`,
+      { params: { memberId } }
+    )
+    return data
+  },
+
+  /**
+   * 좋아요 상태 조회
+   */
+  async getLikeStatus(productId: number, memberId: number): Promise<ProductLikeStatusResponse> {
+    const { data } = await http.get<ProductLikeStatusResponse>(
+      `/api/v1/products/${productId}/like`,
+      { params: { memberId } }
+    )
+    return data
+  },
+
+  /**
+   * 좋아요 개수 조회
+   */
+  async getLikeCount(productId: number): Promise<number> {
+    const { data } = await http.get<number>(`/api/v1/products/${productId}/like/count`)
     return data
   },
 }

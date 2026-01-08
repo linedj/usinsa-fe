@@ -13,6 +13,9 @@ export default function ProductDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [addingToCart, setAddingToCart] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [likePending, setLikePending] = useState(false)
   const { user } = useAuth()
 
   useEffect(() => {
@@ -21,15 +24,59 @@ export default function ProductDetailPage() {
     }
   }, [id])
 
+  useEffect(() => {
+    if (id && user?.memberId) {
+      loadLikeStatus(Number(id), user.memberId)
+    }
+  }, [id, user?.memberId])
+
   const loadProduct = async (productId: number) => {
     try {
       setLoading(true)
       const data = await productApi.getProduct(productId)
       setProduct(data)
+      setLikeCount(data.likeCount || 0)
     } catch (err) {
       setError(err instanceof Error ? err.message : '상품 정보를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadLikeStatus = async (productId: number, memberId: number) => {
+    try {
+      const status = await productApi.getLikeStatus(productId, memberId)
+      setIsLiked(status.liked || false)
+    } catch (err) {
+      console.error('좋아요 상태 조회 실패:', err)
+    }
+  }
+
+  const handleToggleLike = async () => {
+    if (!user?.memberId) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      return
+    }
+
+    if (!product) return
+
+    try {
+      setLikePending(true)
+      
+      if (isLiked) {
+        const response = await productApi.removeLike(product.id, user.memberId)
+        setIsLiked(false)
+        setLikeCount(response.likeCount)
+      } else {
+        const response = await productApi.addLike(product.id, user.memberId)
+        setIsLiked(true)
+        setLikeCount(response.likeCount)
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '좋아요 처리에 실패했습니다.')
+    } finally {
+      setLikePending(false)
     }
   }
 
@@ -146,7 +193,7 @@ export default function ProductDetailPage() {
             <div className="flex gap-6 mb-8 pb-8 border-b">
               <div className="flex items-center gap-2">
                 <span className="text-red-500">❤️</span>
-                <span className="text-sm text-gray-600">좋아요 {product.likeCount || 0}</span>
+                <span className="text-sm text-gray-600">좋아요 {likeCount}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span>👁️</span>
@@ -227,9 +274,15 @@ export default function ProductDetailPage() {
                   장바구니
                 </button>
                 <button
-                  className="py-4 border-2 border-gray-300 text-gray-700 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors"
+                  onClick={handleToggleLike}
+                  disabled={likePending}
+                  className={`py-4 border-2 rounded-lg text-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isLiked
+                      ? 'border-red-500 text-red-500 bg-red-50 hover:bg-red-100'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
-                  ❤️ 찜하기
+                  {isLiked ? '❤️ 찜했음' : '🤍 찜하기'}
                 </button>
               </div>
             </div>

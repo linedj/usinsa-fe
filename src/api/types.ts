@@ -4,10 +4,16 @@ export type LoginRequest = components['schemas']['LoginReq']
 export type LoginEnvelope = components['schemas']['RsDataLoginRes']
 export type LoginPayload = components['schemas']['LoginRes']
 
-export type SignUpRequest = components['schemas']['SignUpReq']
+export type SignUpRequest = components['schemas']['SignupReq']
 export type SignUpEnvelope = components['schemas']['RsDataVoid']
 
-export type OAuthLoginRequest = components['schemas']['OAuthLoginReq']
+// OAuth types - 백엔드에서 아직 OpenAPI 스키마에 추가되지 않음
+export type OAuthLoginRequest = {
+  provider: string
+  code: string
+  redirectUri: string
+}
+
 export type OAuthLoginEnvelope = components['schemas']['RsDataLoginRes']
 
 export type TokenPair = components['schemas']['TokenPair']
@@ -55,6 +61,15 @@ export type ProductOptionResponse = {
   color: string
   stock: number
 }
+
+// Product Like Types
+export type ProductLikeResponse = {
+  productId: number
+  liked: boolean
+  likeCount: number
+}
+
+export type ProductLikeStatusResponse = components['schemas']['StatusResponse']
 
 // Cart Types
 export type CartCreateRequest = {
