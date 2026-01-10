@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { productApi } from '@/api/productApi'
 import { cartApi } from '@/api/cartApi'
-import type { ProductResponse } from '@/api/types'
+import type { ProductResponse, ProductOptionResponse } from '@/api/types'
 import { useAuth } from '@/auth/useAuth'
 
 export default function ProductDetailPage() {
@@ -11,6 +11,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedOption, setSelectedOption] = useState<ProductOptionResponse | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [addingToCart, setAddingToCart] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
@@ -82,6 +83,16 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!product) return
+    
+    if (!selectedOption) {
+      alert('옵션을 선택해주세요.')
+      return
+    }
+
+    if (selectedOption.stock < quantity) {
+      alert('재고가 부족합니다.')
+      return
+    }
 
     try {
       setAddingToCart(true)
@@ -89,12 +100,12 @@ export default function ProductDetailPage() {
       if (user?.memberId) {
         await cartApi.createCart({
           memberId: user.memberId,
-          productOptionId: product.id,
+          productOptionId: selectedOption.id,
           count: quantity,
         })
       } else {
         await cartApi.createGuestCart({
-          productOptionId: product.id,
+          productOptionId: selectedOption.id,
           count: quantity,
         })
       }
@@ -118,12 +129,22 @@ export default function ProductDetailPage() {
       return
     }
 
+    if (!selectedOption) {
+      alert('옵션을 선택해주세요.')
+      return
+    }
+
+    if (selectedOption.stock < quantity) {
+      alert('재고가 부족합니다.')
+      return
+    }
+
     try {
       setAddingToCart(true)
       
       await cartApi.createCart({
         memberId: user.memberId!,
-        productOptionId: product.id,
+        productOptionId: selectedOption.id,
         count: quantity,
       })
       
@@ -136,7 +157,9 @@ export default function ProductDetailPage() {
   }
 
   const handleQuantityChange = (newQuantity: number) => {
-    setQuantity(Math.max(1, newQuantity))
+    if (!selectedOption) return
+    const maxQuantity = selectedOption.stock
+    setQuantity(Math.max(1, Math.min(newQuantity, maxQuantity)))
   }
 
   if (loading) {
@@ -161,6 +184,8 @@ export default function ProductDetailPage() {
       </div>
     )
   }
+
+  const hasOptions = product.options && product.options.length > 0
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -202,12 +227,66 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="space-y-6 mb-8">
+              {/* 옵션 선택 - 드롭다운 */}
+              {hasOptions && (
+                <div>
+                  <label className="block font-semibold mb-3 text-lg">옵션 선택</label>
+                  <select
+                    value={selectedOption?.id || ''}
+                    onChange={(e) => {
+                      const option = product.options!.find(opt => opt.id === Number(e.target.value))
+                      setSelectedOption(option || null)
+                      setQuantity(1) // 옵션 변경 시 수량 초기화
+                    }}
+                    className="w-full h-14 px-4 border-2 border-gray-300 rounded-lg text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white cursor-pointer"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '1.5em 1.5em',
+                      paddingRight: '2.5rem'
+                    }}
+                  >
+                    <option value="">옵션을 선택해주세요</option>
+                    {product.options!.map((option) => (
+                      <option 
+                        key={option.id} 
+                        value={option.id}
+                        disabled={option.stock === 0}
+                      >
+                        {option.optionName} {option.stock === 0 ? '(품절)' : `(재고 ${option.stock}개)`}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedOption && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-semibold text-gray-900">{selectedOption.optionName}</div>
+                          <div className="text-sm text-gray-600 mt-1">재고 {selectedOption.stock}개</div>
+                        </div>
+                        <button
+                          onClick={() => setSelectedOption(null)}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          title="선택 취소"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 수량 선택 */}
               <div>
                 <label className="block font-semibold mb-3 text-lg">수량</label>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleQuantityChange(quantity - 1)}
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || !selectedOption}
                     className="w-12 h-12 border-2 border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-xl"
                   >
                     -
@@ -216,16 +295,24 @@ export default function ProductDetailPage() {
                     type="number"
                     value={quantity}
                     onChange={(e) => handleQuantityChange(Number(e.target.value))}
-                    className="w-20 h-12 text-center border-2 border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={!selectedOption}
+                    className="w-20 h-12 text-center border-2 border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     min="1"
+                    max={selectedOption?.stock || 1}
                   />
                   <button
                     onClick={() => handleQuantityChange(quantity + 1)}
-                    className="w-12 h-12 border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center text-xl"
+                    disabled={!selectedOption || quantity >= (selectedOption?.stock || 0)}
+                    className="w-12 h-12 border-2 border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-xl"
                   >
                     +
                   </button>
                 </div>
+                {selectedOption && (
+                  <div className="text-sm text-gray-600 mt-2">
+                    최대 {selectedOption.stock}개까지 구매 가능합니다.
+                  </div>
+                )}
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4">
@@ -321,6 +408,14 @@ export default function ProductDetailPage() {
                   <span className="w-32 text-gray-600">카테고리</span>
                   <span className="flex-1 font-medium">{product.categoryName}</span>
                 </div>
+                {hasOptions && (
+                  <div className="flex border-b pb-2">
+                    <span className="w-32 text-gray-600">옵션</span>
+                    <span className="flex-1 font-medium">
+                      {product.options!.map(opt => opt.optionName).join(', ')}
+                    </span>
+                  </div>
+                )}
                 <div className="flex border-b pb-2">
                   <span className="w-32 text-gray-600">원산지</span>
                   <span className="flex-1 font-medium">상품 상세 참조</span>

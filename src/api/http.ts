@@ -15,6 +15,7 @@ export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // 세션 쿠키 전송을 위해 필수
 })
 
 const refreshClient = axios.create({
@@ -22,6 +23,7 @@ const refreshClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // 세션 쿠키 전송을 위해 필수
 })
 
 const requestNewTokens = async () => {
@@ -81,4 +83,3 @@ http.interceptors.response.use(
     return http(config)
   },
 )
-

@@ -572,6 +572,7 @@ export interface components {
             likeCount?: number;
             /** Format: int32 */
             clickCount?: number;
+            options?: components["schemas"]["Response"][];
         };
         UpdateReq: {
             receiverAddress?: string;

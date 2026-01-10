@@ -46,20 +46,19 @@ export type ProductResponse = {
   price: number
   likeCount: number
   clickCount: number
+  options?: ProductOptionResponse[]
 }
 
 export type ProductOptionCreateRequest = {
-  size: string
-  color: string
+  optionName: string
   stock: number
 }
 
 export type ProductOptionResponse = {
   id: number
-  productId: number
-  size: string
-  color: string
+  optionName: string
   stock: number
+  productId: number
 }
 
 // Product Like Types
