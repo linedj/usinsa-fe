@@ -57,10 +57,23 @@ http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response, config } = error
+
+    // 백엔드에서 반환한 커스텀 에러 메시지 추출
+    if (response?.data) {
+      const errorData = response.data
+      
+      // RsData 형식의 에러 응답 처리
+      if (errorData.error && errorData.error.message) {
+        error.message = errorData.error.message
+      }
+    }
+
+    // 401 에러가 아니거나 재시도 요청인 경우 에러 반환
     if (response?.status !== 401 || config.__isRetryRequest) {
       return Promise.reject(error)
     }
 
+    // 토큰 갱신 시도
     if (!refreshPromise) {
       refreshPromise = (async () => {
         const tokenPair = await requestNewTokens()
@@ -74,6 +87,8 @@ http.interceptors.response.use(
     }
 
     const newAccessToken = await refreshPromise
+    refreshPromise = null
+    
     if (!newAccessToken) {
       return Promise.reject(error)
     }

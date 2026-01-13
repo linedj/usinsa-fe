@@ -22,26 +22,39 @@ const unwrapResponse = <T>(envelope: { success?: boolean; data?: T; error?: { me
 
 export const authApi = {
   async login(payload: LoginRequest): Promise<LoginPayload> {
-    const { data } = await http.post<LoginEnvelope>('/api/v1/auth/login', payload)
-    const result = unwrapResponse<LoginPayload>(data)
-    if (!result) {
-      throw new Error('로그인 응답 데이터가 없습니다.')
+    try {
+      const { data } = await http.post<LoginEnvelope>('/api/v1/auth/login', payload)
+      const result = unwrapResponse<LoginPayload>(data)
+      if (!result) {
+        throw new Error('로그인 응답 데이터가 없습니다.')
+      }
+      return result
+    } catch (error) {
+      // http 인터셉터에서 이미 에러 메시지를 추출했으므로 그대로 전달
+      throw error
     }
-    return result
   },
   async signup(payload: SignUpRequest): Promise<void> {
-    const { data } = await http.post<SignUpEnvelope>('/api/v1/auth/signup', payload)
-    if (!data.success) {
-      throw new Error(data.error?.message ?? '회원가입에 실패했습니다.')
+    try {
+      const { data } = await http.post<SignUpEnvelope>('/api/v1/auth/signup', payload)
+      if (!data.success) {
+        throw new Error(data.error?.message ?? '회원가입에 실패했습니다.')
+      }
+    } catch (error) {
+      throw error
     }
   },
   async oauthLogin(payload: OAuthLoginRequest): Promise<LoginPayload> {
-    const { data } = await http.post<OAuthLoginEnvelope>('/api/v1/auth/oauth/login', payload)
-    const result = unwrapResponse<LoginPayload>(data)
-    if (!result) {
-      throw new Error('OAuth 로그인 응답 데이터가 없습니다.')
+    try {
+      const { data } = await http.post<OAuthLoginEnvelope>('/api/v1/auth/oauth/login', payload)
+      const result = unwrapResponse<LoginPayload>(data)
+      if (!result) {
+        throw new Error('OAuth 로그인 응답 데이터가 없습니다.')
+      }
+      return result
+    } catch (error) {
+      throw error
     }
-    return result
   },
   redirectToOauth(provider: 'google' | 'kakao' | 'naver') {
     try {
@@ -60,20 +73,28 @@ export const authApi = {
     }
   },
   async logout(): Promise<void> {
-    await http.post<LogoutEnvelope>('/api/v1/auth/logout')
+    try {
+      await http.post<LogoutEnvelope>('/api/v1/auth/logout')
+    } catch (error) {
+      throw error
+    }
   },
   async refresh(refreshToken?: string): Promise<TokenPair> {
-    const token = refreshToken ?? tokenStorage.getTokens()?.refreshToken
-    if (!token) {
-      throw new Error('갱신 토큰이 없습니다.')
+    try {
+      const token = refreshToken ?? tokenStorage.getTokens()?.refreshToken
+      if (!token) {
+        throw new Error('갱신 토큰이 없습니다.')
+      }
+      const { data } = await http.post<TokenPairEnvelope>('/api/v1/auth/refresh', {
+        refreshToken: token,
+      })
+      const result = unwrapResponse<TokenPair>(data)
+      if (!result) {
+        throw new Error('토큰 갱신 응답 데이터가 없습니다.')
+      }
+      return result
+    } catch (error) {
+      throw error
     }
-    const { data } = await http.post<TokenPairEnvelope>('/api/v1/auth/refresh', {
-      refreshToken: token,
-    })
-    const result = unwrapResponse<TokenPair>(data)
-    if (!result) {
-      throw new Error('토큰 갱신 응답 데이터가 없습니다.')
-    }
-    return result
   },
 }
