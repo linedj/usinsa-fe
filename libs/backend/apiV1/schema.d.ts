@@ -228,6 +228,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kakao-pay/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 준비
+         * @description 카카오페이 결제를 준비합니다.
+         */
+        post: operations["ready"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kakao-pay/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 취소
+         * @description 카카오페이 결제를 취소합니다.
+         */
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kakao-pay/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 승인
+         * @description 카카오페이 결제를 승인합니다.
+         */
+        post: operations["approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/delivery-address": {
         parameters: {
             query?: never;
@@ -586,6 +646,168 @@ export interface components {
             productOptionId?: number;
             /** Format: int32 */
             quantity?: number;
+        };
+        ReadyRequest: {
+            cid?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            item_name?: string;
+            /** Format: int32 */
+            quantity?: number;
+            /** Format: int32 */
+            total_amount?: number;
+            /** Format: int32 */
+            tax_free_amount?: number;
+            /** Format: int32 */
+            vat_amount?: number;
+            approval_url?: string;
+            cancel_url?: string;
+            fail_url?: string;
+        };
+        ReadyResponse: {
+            tid?: string;
+            next_redirect_app_url?: string;
+            next_redirect_mobile_url?: string;
+            next_redirect_pc_url?: string;
+            android_app_scheme?: string;
+            ios_app_scheme?: string;
+            /** Format: date-time */
+            created_at?: string;
+        };
+        CancelRequest: {
+            cid?: string;
+            tid?: string;
+            /** Format: int32 */
+            cancel_amount?: number;
+            /** Format: int32 */
+            cancel_tax_free_amount?: number;
+            /** Format: int32 */
+            cancel_vat_amount?: number;
+        };
+        Amount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        ApprovedCancelAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        CancelAvailableAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        CancelResponse: {
+            aid?: string;
+            tid?: string;
+            cid?: string;
+            status?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            payment_method_type?: string;
+            amount?: components["schemas"]["Amount"];
+            approved_cancel_amount?: components["schemas"]["ApprovedCancelAmount"];
+            canceled_amount?: components["schemas"]["CanceledAmount"];
+            cancel_available_amount?: components["schemas"]["CancelAvailableAmount"];
+            item_name?: string;
+            item_code?: string;
+            /** Format: int32 */
+            quantity?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            approved_at?: string;
+            /** Format: date-time */
+            canceled_at?: string;
+            payload?: string;
+        };
+        CanceledAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        ApproveRequest: {
+            cid?: string;
+            tid?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            pg_token?: string;
+        };
+        ApproveResponse: {
+            aid?: string;
+            tid?: string;
+            cid?: string;
+            sid?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            payment_method_type?: string;
+            amount?: components["schemas"]["Amount"];
+            card_info?: components["schemas"]["CardInfo"];
+            item_name?: string;
+            item_code?: string;
+            /** Format: int32 */
+            quantity?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            approved_at?: string;
+            payload?: string;
+        };
+        CardInfo: {
+            purchase_corp?: string;
+            purchase_corp_code?: string;
+            issuer_corp?: string;
+            issuer_corp_code?: string;
+            kakaopay_purchase_corp?: string;
+            kakaopay_purchase_corp_code?: string;
+            kakaopay_issuer_corp?: string;
+            kakaopay_issuer_corp_code?: string;
+            bin?: string;
+            card_type?: string;
+            install_month?: string;
+            approved_id?: string;
+            card_mid?: string;
+            interest_free_install?: string;
+            installment_type?: string;
+            card_item_code?: string;
         };
         GuestCreateReq: {
             /** Format: int64 */
@@ -1343,6 +1565,78 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
+    ready: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReadyResponse"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CancelResponse"];
+                };
+            };
+        };
+    };
+    approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApproveResponse"];
                 };
             };
         };
