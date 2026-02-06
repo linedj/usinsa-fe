@@ -110,47 +110,49 @@ export type CartItem = CartResponse & {
   totalPrice: number
 }
 
-// Order Types
+// ─── Order Types (백엔드 변경사항 반영) ───────────────────────
+
 export type OrderCreateRequest = {
   memberId: number
-  orderItems: OrderItemRequest[]
-  recipientName: string
-  recipientPhone: string
-  shippingAddress: string
-}
-
-export type OrderItemRequest = {
-  productOptionId: number
-  quantity: number
-  price: number
+  receiverName: string
+  receiverPhone: string
+  receiverAddress: string
 }
 
 export type OrderUpdateRequest = {
-  status: string
-  recipientName?: string
-  recipientPhone?: string
-  shippingAddress?: string
+  receiverName?: string
+  receiverPhone?: string
+  receiverAddress?: string
 }
+
+// 백엔드 OrderStatus enum과 일치
+export type OrderStatus = 
+  | 'CREATED'           // 주문 생성
+  | 'PAYMENT_READY'     // 결제 준비 완료
+  | 'PAYMENT_COMPLETED' // 결제 완료
+  | 'CANCELLED'         // 취소됨
 
 export type OrderResponse = {
   id: number
   memberId: number
-  orderNumber: string
-  status: string
-  totalAmount: number
-  recipientName: string
-  recipientPhone: string
-  shippingAddress: string
-  orderDate: string
-  orderItems: OrderItemResponse[]
+  receiverAddress: string
+  receiverName: string
+  receiverPhone: string
+  status: OrderStatus
 }
 
-export type OrderItemResponse = {
-  id: number
+// OrderedProduct Types
+export type OrderedProductCreateRequest = {
+  orderId: number
   productOptionId: number
-  productName: string
   quantity: number
-  price: number
+}
+
+export type OrderedProductResponse = {
+  id: number
+  orderId: number
+  productOptionId: number
+  quantity: number
 }
 
 // Search Types
@@ -162,4 +164,83 @@ export type ProductSearchDto = {
   price: number
   likeCount: number
   clickCount: number
+}
+
+// ─── Payment Types (백엔드 API 응답 구조와 일치) ────────────────
+
+export type KakaoPayReadyResponse = {
+  tid: string
+  nextRedirectAppUrl?: string
+  nextRedirectMobileUrl?: string
+  nextRedirectPcUrl?: string
+  androidAppScheme?: string
+  iosAppScheme?: string
+  createdAt?: string
+}
+
+export type KakaoPayAmount = {
+  total: number
+  taxFree: number
+  vat: number
+  point?: number
+  discount?: number
+  greenDeposit?: number
+}
+
+export type KakaoPayCardInfo = {
+  purchaseCorp?: string
+  purchaseCorpCode?: string
+  issuerCorp?: string
+  issuerCorpCode?: string
+  kakaopayPurchaseCorp?: string
+  kakaopayPurchaseCorpCode?: string
+  kakaopayIssuerCorp?: string
+  kakaopayIssuerCorpCode?: string
+  bin?: string
+  cardType?: string
+  installMonth?: string
+  approvedId?: string
+  cardMid?: string
+  interestFreeInstall?: string
+  installmentType?: string
+  cardItemCode?: string
+}
+
+export type KakaoPayApproveResponse = {
+  aid: string
+  tid: string
+  cid: string
+  sid?: string
+  partnerOrderId: string
+  partnerUserId: string
+  paymentMethodType: string
+  amount: KakaoPayAmount
+  cardInfo?: KakaoPayCardInfo
+  itemName: string
+  itemCode?: string
+  quantity: number
+  createdAt?: string
+  approvedAt?: string
+  payload?: string
+}
+
+export type KakaoPayCancelResponse = {
+  aid: string
+  tid: string
+  cid: string
+  status: string
+  partnerOrderId: string
+  partnerUserId: string
+  paymentMethodType: string
+  amount: KakaoPayAmount
+  approvedCancelAmount?: KakaoPayAmount
+  canceledAmount?: KakaoPayAmount
+  cancelAvailableAmount?: KakaoPayAmount
+  itemName: string
+  itemCode?: string
+  quantity: number
+  createdAt?: string
+  approvedAt?: string
+  canceledAt?: string
+  payload?: string
 }

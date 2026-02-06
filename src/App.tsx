@@ -14,6 +14,9 @@ import CartPage from '@/pages/CartPage'
 import SearchPage from '@/pages/SearchPage'
 import OrderListPage from '@/pages/OrderListPage'
 import CheckoutPage from '@/pages/CheckoutPage'
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage'
+import PaymentCancelPage from '@/pages/PaymentCancelPage'
+import PaymentFailPage from '@/pages/PaymentFailPage'
 import Layout from '@/components/Layout'
 
 function App() {
@@ -55,6 +58,33 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
+            {/* Payment Routes - 결제 결과 페이지 (인증 필요) */}
+            <Route
+              path="/payment/success"
+              element={
+                <ProtectedRoute>
+                  <PaymentSuccessPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/cancel"
+              element={
+                <ProtectedRoute>
+                  <PaymentCancelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/fail"
+              element={
+                <ProtectedRoute>
+                  <PaymentFailPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/dashboard"
               element={

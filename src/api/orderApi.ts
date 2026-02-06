@@ -1,7 +1,13 @@
 import { http } from './http'
-import type { OrderResponse, OrderCreateRequest, OrderUpdateRequest } from './types'
+import type { 
+  OrderResponse, 
+  OrderCreateRequest, 
+  OrderUpdateRequest,
+  OrderedProductCreateRequest,
+  OrderedProductResponse 
+} from './types'
 
-// 백엔드 Order API는 RsData 래퍼 없이 직접 데이터를 반환합니다
+// 백엔드 Order API
 export const orderApi = {
   /**
    * 주문 생성
@@ -41,5 +47,50 @@ export const orderApi = {
   async cancelOrder(orderId: number): Promise<OrderResponse> {
     const { data } = await http.post<OrderResponse>(`/api/v1/orders/${orderId}/cancel`)
     return data
+  },
+}
+
+// 주문 상품 API
+export const orderedProductApi = {
+  /**
+   * 주문 상품 등록
+   */
+  async createOrderedProduct(payload: OrderedProductCreateRequest): Promise<OrderedProductResponse> {
+    const { data } = await http.post<OrderedProductResponse>('/api/v1/ordered-products', payload)
+    return data
+  },
+
+  /**
+   * 주문 상품 단건 조회
+   */
+  async getOrderedProduct(id: number): Promise<OrderedProductResponse> {
+    const { data } = await http.get<OrderedProductResponse>(`/api/v1/ordered-products/${id}`)
+    return data
+  },
+
+  /**
+   * 주문 상품 전체 조회
+   */
+  async getAllOrderedProducts(): Promise<OrderedProductResponse[]> {
+    const { data } = await http.get<OrderedProductResponse[]>('/api/v1/ordered-products')
+    return data
+  },
+
+  /**
+   * 주문 상품 수정
+   */
+  async updateOrderedProduct(id: number, quantity: number): Promise<OrderedProductResponse> {
+    const { data } = await http.put<OrderedProductResponse>(
+      `/api/v1/ordered-products/${id}`,
+      { quantity }
+    )
+    return data
+  },
+
+  /**
+   * 주문 상품 삭제
+   */
+  async deleteOrderedProduct(id: number): Promise<void> {
+    await http.delete(`/api/v1/ordered-products/${id}`)
   },
 }

@@ -180,6 +180,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/kakao-pay/{orderId}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 준비
+         * @description 주문에 대한 카카오페이 결제를 준비합니다. (인증 필요)
+         */
+        post: operations["ready"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/kakao-pay/{orderId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 취소
+         * @description 카카오페이 결제를 취소합니다. (인증 필요)
+         */
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/kakao-pay/{orderId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 승인
+         * @description 카카오페이 결제를 승인합니다. (인증 필요)
+         */
+        post: operations["approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orders": {
         parameters: {
             query?: never;
@@ -222,66 +282,6 @@ export interface paths {
         get: operations["getAllOrderedProduct"];
         put?: never;
         post: operations["createOrderedProduct"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/kakao-pay/ready": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 결제 준비
-         * @description 카카오페이 결제를 준비합니다.
-         */
-        post: operations["ready"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/kakao-pay/cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 결제 취소
-         * @description 카카오페이 결제를 취소합니다.
-         */
-        post: operations["cancel"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/kakao-pay/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 결제 승인
-         * @description 카카오페이 결제를 승인합니다.
-         */
-        post: operations["approve"];
         delete?: never;
         options?: never;
         head?: never;
@@ -639,31 +639,6 @@ export interface components {
             receiverName?: string;
             receiverPhone?: string;
         };
-        Request: {
-            /** Format: int64 */
-            orderId?: number;
-            /** Format: int64 */
-            productOptionId?: number;
-            /** Format: int32 */
-            quantity?: number;
-        };
-        ReadyRequest: {
-            cid?: string;
-            partner_order_id?: string;
-            partner_user_id?: string;
-            item_name?: string;
-            /** Format: int32 */
-            quantity?: number;
-            /** Format: int32 */
-            total_amount?: number;
-            /** Format: int32 */
-            tax_free_amount?: number;
-            /** Format: int32 */
-            vat_amount?: number;
-            approval_url?: string;
-            cancel_url?: string;
-            fail_url?: string;
-        };
         ReadyResponse: {
             tid?: string;
             next_redirect_app_url?: string;
@@ -673,16 +648,6 @@ export interface components {
             ios_app_scheme?: string;
             /** Format: date-time */
             created_at?: string;
-        };
-        CancelRequest: {
-            cid?: string;
-            tid?: string;
-            /** Format: int32 */
-            cancel_amount?: number;
-            /** Format: int32 */
-            cancel_tax_free_amount?: number;
-            /** Format: int32 */
-            cancel_vat_amount?: number;
         };
         Amount: {
             /** Format: int32 */
@@ -764,13 +729,6 @@ export interface components {
             /** Format: int32 */
             green_deposit?: number;
         };
-        ApproveRequest: {
-            cid?: string;
-            tid?: string;
-            partner_order_id?: string;
-            partner_user_id?: string;
-            pg_token?: string;
-        };
         ApproveResponse: {
             aid?: string;
             tid?: string;
@@ -808,6 +766,14 @@ export interface components {
             interest_free_install?: string;
             installment_type?: string;
             card_item_code?: string;
+        };
+        Request: {
+            /** Format: int64 */
+            orderId?: number;
+            /** Format: int64 */
+            productOptionId?: number;
+            /** Format: int32 */
+            quantity?: number;
         };
         GuestCreateReq: {
             /** Format: int64 */
@@ -1459,6 +1425,74 @@ export interface operations {
             };
         };
     };
+    ready: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReadyResponse"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CancelResponse"];
+                };
+            };
+        };
+    };
+    approve: {
+        parameters: {
+            query: {
+                pgToken: string;
+            };
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApproveResponse"];
+                };
+            };
+        };
+    };
     getAllOrders: {
         parameters: {
             query?: never;
@@ -1565,78 +1599,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Response"];
-                };
-            };
-        };
-    };
-    ready: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReadyRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ReadyResponse"];
-                };
-            };
-        };
-    };
-    cancel: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CancelRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["CancelResponse"];
-                };
-            };
-        };
-    };
-    approve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ApproveRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApproveResponse"];
                 };
             };
         };
