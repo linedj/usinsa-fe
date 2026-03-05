@@ -1,76 +1,72 @@
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { authApi } from '@/api/authApi'
-import type { LoginPayload, LoginRequest, TokenPair, SignUpRequest, OAuthLoginRequest } from '@/api/types'
-import { tokenStorage, type AuthTokens, type StoredAuth } from './tokenStorage'
+import { http } from '@/api/http'
+import type { LoginRequest, SignUpRequest } from '@/api/types'
+
+type UserInfo = {
+  memberId: number
+  email: string
+  name: string
+  nickname: string
+}
 
 type AuthContextValue = {
-  user: LoginPayload | null
-  tokens: AuthTokens | null
+  user: UserInfo | null
   isAuthenticated: boolean
   loading: boolean
   error: string | null
   login: (payload: LoginRequest) => Promise<void>
   signup: (payload: SignUpRequest) => Promise<void>
-  oauthLogin: (payload: OAuthLoginRequest) => Promise<void>
   redirectToOauth: (provider: 'google' | 'kakao' | 'naver') => void
   logout: () => Promise<void>
-  refreshTokens: () => Promise<void>
+  fetchMe: () => Promise<void>
 }
 
-const defaultSnapshot: StoredAuth = tokenStorage.getSnapshot()
-
 export const AuthContext = createContext<AuthContextValue>({
-  user: defaultSnapshot.user,
-  tokens: defaultSnapshot.tokens,
-  isAuthenticated: Boolean(defaultSnapshot.tokens?.accessToken),
+  user: null,
+  isAuthenticated: false,
   loading: false,
   error: null,
   async login() {},
   async signup() {},
-  async oauthLogin() {},
   redirectToOauth: () => {},
   async logout() {},
-  async refreshTokens() {},
+  async fetchMe() {},
 })
 
-const toTokenPair = (payload?: LoginPayload | null): TokenPair | null => {
-  if (!payload?.accessToken || !payload.refreshToken) {
-    return null
-  }
-  return {
-    accessToken: payload.accessToken,
-    refreshToken: payload.refreshToken,
-    accessExpEpochSec: payload.accessTokenExp,
-    refreshExpEpochSec: payload.refreshTokenExp,
-  }
-}
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [snapshot, setSnapshot] = useState<StoredAuth>(defaultSnapshot)
-  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<UserInfo | null>(null)
+  const [loading, setLoading] = useState(true) // 초기 me() 호출 대기
   const [error, setError] = useState<string | null>(null)
 
-  const updateState = (next: StoredAuth) => {
-    setSnapshot(next)
-  }
+  // 앱 시작 시 쿠키로 로그인 상태 복원
+  const fetchMe = useCallback(async () => {
+    try {
+      const { data } = await http.get<{ success: boolean; data: UserInfo }>('/api/v1/auth/me')
+      setUser(data.success ? data.data : null)
+    } catch {
+      setUser(null)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchMe().finally(() => setLoading(false))
+  }, [fetchMe])
 
   const login = useCallback(async (payload: LoginRequest) => {
     setLoading(true)
     setError(null)
     try {
-      const loginResponse = await authApi.login(payload)
-      const tokensFromLogin = toTokenPair(loginResponse)
-      tokenStorage.hydrate(loginResponse, tokensFromLogin)
-      updateState(tokenStorage.getSnapshot())
+      // 일반 로그인: 백엔드가 쿠키에 토큰을 기록하고 JSON도 반환
+      await authApi.login(payload)
+      await fetchMe()
     } catch (err) {
-      tokenStorage.clear()
-      updateState(tokenStorage.getSnapshot())
       setError(err instanceof Error ? err.message : '로그인에 실패했습니다.')
       throw err
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [fetchMe])
 
   const signup = useCallback(async (payload: SignUpRequest) => {
     setLoading(true)
@@ -79,24 +75,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await authApi.signup(payload)
     } catch (err) {
       setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const oauthLogin = useCallback(async (payload: OAuthLoginRequest) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const loginResponse = await authApi.oauthLogin(payload)
-      const tokensFromLogin = toTokenPair(loginResponse)
-      tokenStorage.hydrate(loginResponse, tokensFromLogin)
-      updateState(tokenStorage.getSnapshot())
-    } catch (err) {
-      tokenStorage.clear()
-      updateState(tokenStorage.getSnapshot())
-      setError(err instanceof Error ? err.message : 'OAuth 로그인에 실패했습니다.')
       throw err
     } finally {
       setLoading(false)
@@ -112,49 +90,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null)
     try {
       await authApi.logout()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '로그아웃에 실패했습니다.')
     } finally {
-      tokenStorage.clear()
-      updateState(tokenStorage.getSnapshot())
-      setLoading(false)
-    }
-  }, [])
-
-  const refreshTokens = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const refreshed = await authApi.refresh()
-      tokenStorage.setTokens(refreshed)
-      updateState(tokenStorage.getSnapshot())
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '토큰 갱신에 실패했습니다.')
-      tokenStorage.clear()
-      updateState(tokenStorage.getSnapshot())
-      throw err
-    } finally {
+      setUser(null)
       setLoading(false)
     }
   }, [])
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user: snapshot.user,
-      tokens: snapshot.tokens,
-      isAuthenticated: Boolean(snapshot.tokens?.accessToken),
+      user,
+      isAuthenticated: user !== null,
       loading,
       error,
       login,
       signup,
-      oauthLogin,
       redirectToOauth,
       logout,
-      refreshTokens,
+      fetchMe,
     }),
-    [snapshot, loading, error, login, signup, oauthLogin, redirectToOauth, logout, refreshTokens],
+    [user, loading, error, login, signup, redirectToOauth, logout, fetchMe],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
-

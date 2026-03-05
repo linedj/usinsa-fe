@@ -393,6 +393,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 회원가입 */
         post: operations["signup"];
         delete?: never;
         options?: never;
@@ -409,6 +410,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 토큰 갱신 (Refresh 쿠키 사용) */
         post: operations["refresh"];
         delete?: never;
         options?: never;
@@ -425,6 +427,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 로그아웃 */
         post: operations["logout"];
         delete?: never;
         options?: never;
@@ -441,6 +444,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 일반 로그인 */
         post: operations["login"];
         delete?: never;
         options?: never;
@@ -568,6 +572,23 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getMemberCarts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 정보 조회 (쿠키 인증 상태 확인) */
+        get: operations["me"];
         put?: never;
         post?: never;
         delete?: never;
@@ -799,9 +820,6 @@ export interface components {
             error?: components["schemas"]["ErrorDetail"];
             data?: Record<string, never>;
         };
-        RefreshReq: {
-            refreshToken?: string;
-        };
         RsDataTokenPair: {
             success?: boolean;
             /** Format: int32 */
@@ -865,6 +883,20 @@ export interface components {
             /** Format: int64 */
             productId?: number;
             liked?: boolean;
+        };
+        MeRes: {
+            /** Format: int64 */
+            memberId?: number;
+            email?: string;
+            name?: string;
+            nickname?: string;
+        };
+        RsDataMeRes: {
+            success?: boolean;
+            /** Format: int32 */
+            status?: number;
+            error?: components["schemas"]["ErrorDetail"];
+            data?: components["schemas"]["MeRes"];
         };
     };
     responses: never;
@@ -1782,7 +1814,9 @@ export interface operations {
     mergeGuestCart: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path: {
                 memberId: number;
             };
@@ -1804,7 +1838,9 @@ export interface operations {
     getGuestCarts: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1824,7 +1860,9 @@ export interface operations {
     createGuestCart: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1848,7 +1886,9 @@ export interface operations {
     deleteGuestCart: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1894,11 +1934,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RefreshReq"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2146,6 +2182,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Response"][];
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataMeRes"];
                 };
             };
         };
