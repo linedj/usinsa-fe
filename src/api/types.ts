@@ -7,21 +7,16 @@ export type LoginPayload = components['schemas']['LoginRes']
 export type SignUpRequest = components['schemas']['SignupReq']
 export type SignUpEnvelope = components['schemas']['RsDataVoid']
 
-// OAuth types - 백엔드에서 아직 OpenAPI 스키마에 추가되지 않음
-export type OAuthLoginRequest = {
-  provider: string
-  code: string
-  redirectUri: string
-}
-
-export type OAuthLoginEnvelope = components['schemas']['RsDataLoginRes']
-
-export type TokenPair = components['schemas']['TokenPair']
-export type TokenPairEnvelope = components['schemas']['RsDataTokenPair']
-
-export type RefreshRequest = components['schemas']['RefreshReq']
 export type LogoutEnvelope = components['schemas']['RsDataVoid']
 export type ErrorDetail = components['schemas']['ErrorDetail']
+
+// /api/v1/auth/me 응답
+export type MeResponse = {
+  memberId: number
+  email: string
+  name: string
+  nickname: string
+}
 
 export type ApiSuccessResponse<T> = {
   success?: boolean
@@ -30,7 +25,8 @@ export type ApiSuccessResponse<T> = {
   data?: T
 }
 
-// Product Types
+// ─── Product Types ────────────────────────────────────────────
+
 export type ProductCreateRequest = {
   categoryId: number
   name: string
@@ -61,7 +57,6 @@ export type ProductOptionResponse = {
   productId: number
 }
 
-// Product Like Types
 export type ProductLikeResponse = {
   productId: number
   liked: boolean
@@ -70,7 +65,8 @@ export type ProductLikeResponse = {
 
 export type ProductLikeStatusResponse = components['schemas']['StatusResponse']
 
-// Cart Types
+// ─── Cart Types ───────────────────────────────────────────────
+
 export type CartCreateRequest = {
   memberId: number
   productOptionId: number
@@ -105,12 +101,11 @@ export type CartResponse = {
   productInfo: ProductInfo
 }
 
-// Computed cart properties for UI
 export type CartItem = CartResponse & {
   totalPrice: number
 }
 
-// ─── Order Types (백엔드 변경사항 반영) ───────────────────────
+// ─── Order Types ──────────────────────────────────────────────
 
 export type OrderCreateRequest = {
   memberId: number
@@ -125,12 +120,11 @@ export type OrderUpdateRequest = {
   receiverAddress?: string
 }
 
-// 백엔드 OrderStatus enum과 일치
-export type OrderStatus = 
-  | 'CREATED'           // 주문 생성
-  | 'PAYMENT_READY'     // 결제 준비 완료
-  | 'PAYMENT_COMPLETED' // 결제 완료
-  | 'CANCELLED'         // 취소됨
+export type OrderStatus =
+  | 'CREATED'
+  | 'PAYMENT_READY'
+  | 'PAYMENT_COMPLETED'
+  | 'CANCELLED'
 
 export type OrderResponse = {
   id: number
@@ -141,7 +135,6 @@ export type OrderResponse = {
   status: OrderStatus
 }
 
-// OrderedProduct Types
 export type OrderedProductCreateRequest = {
   orderId: number
   productOptionId: number
@@ -155,7 +148,8 @@ export type OrderedProductResponse = {
   quantity: number
 }
 
-// Search Types
+// ─── Search Types ─────────────────────────────────────────────
+
 export type ProductSearchDto = {
   id: number
   name: string
@@ -166,7 +160,7 @@ export type ProductSearchDto = {
   clickCount: number
 }
 
-// ─── Payment Types (백엔드 API 응답 구조와 일치) ────────────────
+// ─── Payment Types ────────────────────────────────────────────
 
 export type KakaoPayReadyResponse = {
   tid: string

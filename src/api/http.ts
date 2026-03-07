@@ -1,5 +1,4 @@
 import axios from 'axios'
-import type { TokenPairEnvelope } from './types'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
@@ -33,7 +32,6 @@ http.interceptors.response.use(
   async (error) => {
     const { response, config } = error
 
-    // 백엔드 RsData 에러 메시지 추출
     if (response?.data?.error?.message) {
       error.message = response.data.error.message
     }
@@ -42,10 +40,10 @@ http.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // 401 → Refresh Token 쿠키로 갱신 시도
+    // 401 → Refresh 쿠키로 갱신 시도 (body 없이 쿠키만 사용)
     if (!refreshPromise) {
       refreshPromise = refreshClient
-        .post<TokenPairEnvelope>('/api/v1/auth/refresh', {})
+        .post('/api/v1/auth/refresh')
         .then((r) => r.data.success ?? false)
         .catch(() => false)
         .finally(() => { refreshPromise = null })

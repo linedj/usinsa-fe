@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '@/auth/useAuth'
 
 /**
  * OAuth 콜백 페이지
@@ -7,13 +8,13 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
  * Spring Security SuccessHandler가 JWT를 HttpOnly 쿠키에 담아
  * /oauth/callback/:provider 로 리다이렉트한다.
  *
- * 쿠키는 브라우저가 자동으로 보관하므로 FE에서 별도로 파싱·저장할 필요 없음.
- * 에러 파라미터만 확인하고 홈으로 이동한다.
+ * 여기서 me() 조회 + 비회원 장바구니 병합을 처리한 뒤 홈으로 이동한다.
  */
 export const OauthCallbackPage = () => {
   const { provider: _provider } = useParams<{ provider: string }>()
   const location = useLocation()
   const navigate = useNavigate()
+  const { afterOAuthLogin } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -28,8 +29,8 @@ export const OauthCallbackPage = () => {
       return
     }
 
-    // 쿠키는 SuccessHandler가 이미 세팅 완료 → 바로 홈으로
-    navigate('/', { replace: true })
+    // 쿠키 세팅 완료 → me() 조회 + 비회원 장바구니 병합 후 홈으로 이동
+    afterOAuthLogin().then(() => navigate('/', { replace: true }))
   }, [])
 
   if (error) {

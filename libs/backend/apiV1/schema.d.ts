@@ -1814,9 +1814,7 @@ export interface operations {
     mergeGuestCart: {
         parameters: {
             query?: never;
-            header: {
-                "X-Session-Id": string;
-            };
+            header?: never;
             path: {
                 memberId: number;
             };
@@ -1838,9 +1836,7 @@ export interface operations {
     getGuestCarts: {
         parameters: {
             query?: never;
-            header: {
-                "X-Session-Id": string;
-            };
+            header?: never;
             path?: never;
             cookie?: never;
         };
@@ -1860,9 +1856,7 @@ export interface operations {
     createGuestCart: {
         parameters: {
             query?: never;
-            header: {
-                "X-Session-Id": string;
-            };
+            header?: never;
             path?: never;
             cookie?: never;
         };
@@ -1886,9 +1880,7 @@ export interface operations {
     deleteGuestCart: {
         parameters: {
             query?: never;
-            header: {
-                "X-Session-Id": string;
-            };
+            header?: never;
             path?: never;
             cookie?: never;
         };
