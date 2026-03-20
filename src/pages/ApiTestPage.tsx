@@ -86,7 +86,7 @@ export default function ApiTestPage() {
                   runTest(async () => {
                     const cart = await cartApi.createGuestCart({
                       productOptionId: 1,
-                      quantity: 1,
+                      count: 1,
                     })
                     setResult(`비회원 장바구니 추가 성공: ID ${cart.id}`)
                   })
@@ -121,18 +121,11 @@ export default function ApiTestPage() {
                   runTest(async () => {
                     const order = await orderApi.createOrder({
                       memberId: 1,
-                      orderItems: [
-                        {
-                          productOptionId: 1,
-                          quantity: 1,
-                          price: 10000,
-                        },
-                      ],
-                      recipientName: '테스트',
-                      recipientPhone: '010-1234-5678',
-                      shippingAddress: '테스트 주소',
+                      receiverName: '테스트',
+                      receiverPhone: '010-1234-5678',
+                      receiverAddress: '테스트 주소',
                     })
-                    setResult(`주문 생성 성공: ${order.orderNumber}`)
+                    setResult(`주문 생성 성공: ID ${order.id}`)
                   })
                 }
                 disabled={loading}

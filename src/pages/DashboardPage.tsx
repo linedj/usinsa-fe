@@ -2,16 +2,8 @@ import { useMemo } from 'react'
 import { useAuth } from '@/auth/useAuth'
 import { Link } from 'react-router-dom'
 
-const formatEpoch = (epoch?: number) => {
-  if (!epoch) {
-    return '-'
-  }
-  const date = new Date(epoch * 1000)
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-}
-
 export const DashboardPage = () => {
-  const { user, tokens, logout, refreshTokens, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const userRows = useMemo(
     () => [
@@ -23,16 +15,6 @@ export const DashboardPage = () => {
     [user],
   )
 
-  const tokenRows = useMemo(
-    () => [
-      { label: 'Access Token', value: tokens?.accessToken ?? '-' },
-      { label: 'Access Exp.', value: formatEpoch(tokens?.accessTokenExp) },
-      { label: 'Refresh Token', value: tokens?.refreshToken ?? '-' },
-      { label: 'Refresh Exp.', value: formatEpoch(tokens?.refreshTokenExp) },
-    ],
-    [tokens],
-  )
-
   return (
     <div className="page-container">
       <div className="card">
@@ -42,9 +24,6 @@ export const DashboardPage = () => {
             <h1>{user?.name ?? '알 수 없음'}</h1>
           </div>
           <div className="actions">
-            <button type="button" onClick={refreshTokens} disabled={loading}>
-              {loading ? '갱신 중...' : '토큰 갱신'}
-            </button>
             <button type="button" className="secondary" onClick={logout} disabled={loading}>
               로그아웃
             </button>
@@ -56,18 +35,6 @@ export const DashboardPage = () => {
           <dl>
             {userRows.map((row) => (
               <div key={row.label} className="row">
-                <dt>{row.label}</dt>
-                <dd>{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        <section>
-          <h2>토큰 정보</h2>
-          <dl>
-            {tokenRows.map((row) => (
-              <div key={row.label} className="row mono">
                 <dt>{row.label}</dt>
                 <dd>{row.value}</dd>
               </div>
