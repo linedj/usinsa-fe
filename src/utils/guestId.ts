@@ -1,15 +1,15 @@
 const COOKIE_NAME = 'guestId'
 const MAX_AGE_DAYS = 7
-
-// 운영: 서브도메인 간 공유를 위해 domain=usinsa.store 설정
-// 로컬: domain 미설정 (localhost는 domain 속성 무시)
-const DOMAIN = window.location.hostname.includes('usinsa.store')
-  ? 'domain=usinsa.store;'
-  : ''
+const IS_PROD = window.location.hostname.includes('usinsa.store')
 
 function setCookie(value: string) {
   const maxAge = MAX_AGE_DAYS * 24 * 60 * 60
-  document.cookie = `${COOKIE_NAME}=${value}; path=/; max-age=${maxAge}; ${DOMAIN} SameSite=Lax`
+  const base = `${COOKIE_NAME}=${value}; path=/; max-age=${maxAge}`
+  // 운영: 크로스 서브도메인 전송을 위해 SameSite=None;Secure + domain 설정
+  // 로컬: SameSite=Lax (HTTPS 불필요)
+  document.cookie = IS_PROD
+    ? `${base}; domain=usinsa.store; SameSite=None; Secure`
+    : `${base}; SameSite=Lax`
 }
 
 function getCookie(): string | null {
@@ -18,7 +18,10 @@ function getCookie(): string | null {
 }
 
 function deleteCookie() {
-  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; ${DOMAIN} SameSite=Lax`
+  const base = `${COOKIE_NAME}=; path=/; max-age=0`
+  document.cookie = IS_PROD
+    ? `${base}; domain=usinsa.store; SameSite=None; Secure`
+    : `${base}; SameSite=Lax`
 }
 
 export const guestId = {
