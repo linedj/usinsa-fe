@@ -18,7 +18,7 @@ export default function CartPage() {
   const loadCarts = async () => {
     try {
       setLoading(true)
-      const data = user?.memberId 
+      const data = user?.memberId
         ? await cartApi.getMemberCarts(user.memberId)
         : await cartApi.getGuestCarts()
       setCarts(data)
@@ -31,9 +31,10 @@ export default function CartPage() {
 
   const handleUpdateQuantity = async (cartId: number, newCount: number) => {
     if (newCount < 1) return
-    
     try {
-      await cartApi.updateCart(cartId, { count: newCount })
+      user
+        ? await cartApi.updateCart(cartId, { count: newCount })
+        : await cartApi.updateGuestCart(cartId, { count: newCount })
       await loadCarts()
     } catch (err) {
       alert(err instanceof Error ? err.message : '수량 변경에 실패했습니다.')
@@ -42,9 +43,10 @@ export default function CartPage() {
 
   const handleDelete = async (cartId: number) => {
     if (!confirm('장바구니에서 삭제하시겠습니까?')) return
-
     try {
-      await cartApi.deleteCart(cartId)
+      user
+        ? await cartApi.deleteCart(cartId)
+        : await cartApi.deleteGuestCartItem(cartId)
       await loadCarts()
     } catch (err) {
       alert(err instanceof Error ? err.message : '삭제에 실패했습니다.')
@@ -53,7 +55,6 @@ export default function CartPage() {
 
   const handleDeleteAll = async () => {
     if (!confirm('장바구니를 전체 삭제하시겠습니까?')) return
-
     try {
       if (!user) {
         await cartApi.deleteGuestCarts()
@@ -71,13 +72,11 @@ export default function CartPage() {
       alert('장바구니가 비어있습니다.')
       return
     }
-    
     if (!user) {
       alert('주문하려면 로그인이 필요합니다.')
       navigate('/login')
       return
     }
-    
     navigate('/checkout')
   }
 
@@ -105,10 +104,7 @@ export default function CartPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">장바구니</h1>
         {carts.length > 0 && (
-          <button
-            onClick={handleDeleteAll}
-            className="text-red-600 hover:text-red-700 text-sm"
-          >
+          <button onClick={handleDeleteAll} className="text-red-600 hover:text-red-700 text-sm">
             전체 삭제
           </button>
         )}
@@ -127,17 +123,13 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* 장바구니 아이템 리스트 */}
           <div className="lg:col-span-2 space-y-4">
             {carts.map((cart) => (
               <div key={cart.id} className="border rounded-lg p-6 bg-white shadow-sm">
                 <div className="flex gap-6">
-                  {/* 상품 이미지 */}
                   <div className="w-32 h-32 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
                     <span className="text-gray-400 text-sm">이미지</span>
                   </div>
-
-                  {/* 상품 정보 */}
                   <div className="flex-1">
                     <div className="text-sm text-gray-500 mb-1">{cart.productInfo.brandName}</div>
                     <h3 className="font-semibold text-lg mb-2">{cart.productInfo.productName}</h3>
@@ -151,8 +143,6 @@ export default function CartPage() {
                       {cart.productInfo.price.toLocaleString()}원
                     </div>
                   </div>
-
-                  {/* 수량 및 가격 */}
                   <div className="flex flex-col items-end justify-between">
                     <button
                       onClick={() => handleDelete(cart.id)}
@@ -161,7 +151,6 @@ export default function CartPage() {
                     >
                       ✕
                     </button>
-
                     <div className="flex flex-col items-end gap-4">
                       <div className="flex items-center gap-2 border rounded">
                         <button
@@ -181,10 +170,7 @@ export default function CartPage() {
                           +
                         </button>
                       </div>
-
-                      <div className="text-xl font-bold">
-                        {cart.totalPrice.toLocaleString()}원
-                      </div>
+                      <div className="text-xl font-bold">{cart.totalPrice.toLocaleString()}원</div>
                     </div>
                   </div>
                 </div>
@@ -192,11 +178,9 @@ export default function CartPage() {
             ))}
           </div>
 
-          {/* 주문 요약 */}
           <div className="lg:col-span-1">
             <div className="border rounded-lg p-6 bg-white shadow-sm sticky top-4">
               <h2 className="text-xl font-bold mb-6">주문 요약</h2>
-              
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>상품 수</span>
@@ -215,21 +199,18 @@ export default function CartPage() {
                   <span className="text-green-600">무료</span>
                 </div>
               </div>
-
               <div className="border-t pt-4 mb-6">
                 <div className="flex justify-between items-center text-xl font-bold">
                   <span>총 결제금액</span>
                   <span className="text-blue-600 text-2xl">{totalAmount.toLocaleString()}원</span>
                 </div>
               </div>
-
               <button
                 onClick={handleCheckout}
                 className="w-full bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 주문하기
               </button>
-              
               <button
                 onClick={() => navigate('/products')}
                 className="w-full mt-3 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors"
