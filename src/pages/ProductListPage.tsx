@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { productApi } from '@/api/productApi'
 import { cartApi } from '@/api/cartApi'
 import type { ProductResponse } from '@/api/types'
@@ -11,15 +11,19 @@ export default function ProductListPage() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const categoryId = searchParams.get('categoryId')
 
   useEffect(() => {
     loadProducts()
-  }, [])
+  }, [categoryId])
 
   const loadProducts = async () => {
     try {
       setLoading(true)
-      const data = await productApi.getAllProducts()
+      const data = categoryId
+        ? await productApi.getProductsByCategory(Number(categoryId))
+        : await productApi.getAllProducts()
       setProducts(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : '상품 목록을 불러오는데 실패했습니다.')

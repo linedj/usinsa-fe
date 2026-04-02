@@ -1,8 +1,8 @@
 import { http } from './http'
-import type { 
-  ProductResponse, 
-  ProductCreateRequest, 
-  ProductOptionResponse, 
+import type {
+  ProductResponse,
+  ProductCreateRequest,
+  ProductOptionResponse,
   ProductOptionCreateRequest,
   ProductLikeResponse,
   ProductLikeStatusResponse
@@ -50,6 +50,15 @@ export const productApi = {
   },
 
   /**
+   * 카테고리별 상품 조회
+   */
+  async getProductsByCategory(categoryId: number): Promise<ProductResponse[]> {
+    const { data } = await http.get<ProductResponse[]>(`/api/v1/products/category/${categoryId}`)
+    return data
+  },
+
+  /**
+
    * 상품 옵션 추가
    */
   async addOption(productId: number, payload: ProductOptionCreateRequest): Promise<ProductOptionResponse> {
