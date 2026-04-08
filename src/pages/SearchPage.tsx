@@ -95,22 +95,55 @@ export default function SearchPage() {
 
         {/* 인기 검색어 */}
         {!loading && searchResults.length === 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">인기 검색어</h2>
-            <div className="flex flex-wrap gap-2">
-              {trendingKeywords.map((kw, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSearch(kw)}
-                  className="px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-                >
-                  {index + 1}. {kw}
-                </button>
-              ))}
+          <div className="mb-10">
+            <h2 className="text-2xl font-bold mb-5">🔥 인기 검색어</h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {trendingKeywords.map((kw, index) => {
+                const isTop3 = index < 3
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleSearch(kw)}
+                    className={`
+                      flex items-center justify-between px-4 py-3 rounded-lg border
+                      transition-all duration-200
+                      ${isTop3
+                        ? 'bg-blue-50 border-blue-300 hover:bg-blue-100'
+                        : 'bg-white hover:bg-gray-50'}
+                    `}
+                  >
+                    {/* 왼쪽: 순위 + 키워드 */}
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`
+                          w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold
+                          ${isTop3
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700'}
+                        `}
+                      >
+                        {index + 1}
+                      </span>
+
+                      <span className="font-medium text-gray-800">
+                        {kw}
+                      </span>
+                    </div>
+
+                    {/* 오른쪽: Top 뱃지 */}
+                    {isTop3 && (
+                      <span className="text-xs font-bold text-blue-600">
+                        TOP
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
-
         {/* 최근 검색어 */}
         {!loading && searchResults.length === 0 && user && recentSearches.length > 0 && (
           <div className="mb-8">
