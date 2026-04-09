@@ -6,27 +6,16 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 히어로 섹션 */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            USINSA
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            당신의 스타일을 완성하는 쇼핑몰
-          </p>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">USINSA</h1>
+          <p className="text-xl md:text-2xl mb-8 text-blue-100">당신의 스타일을 완성하는 쇼핑몰</p>
           <div className="flex gap-4 justify-center">
-            <Link
-              to="/products"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
+            <Link to="/products" className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
               쇼핑하기
             </Link>
             {!user && (
-              <Link
-                to="/signup"
-                className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
-              >
+              <Link to="/signup" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
                 회원가입
               </Link>
             )}
@@ -34,20 +23,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 카테고리 섹션 */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">인기 카테고리</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { name: '상의', emoji: '👕', color: 'bg-red-100' },
-              { name: '하의', emoji: '👖', color: 'bg-blue-100' },
-              { name: '아우터', emoji: '🧥', color: 'bg-green-100' },
-              { name: '신발', emoji: '👟', color: 'bg-yellow-100' },
+              { name: '상의', emoji: '👕', color: 'bg-red-100', categoryId: 1 },
+              { name: '하의', emoji: '👖', color: 'bg-blue-100', categoryId: 2 },
+              { name: '아우터', emoji: '🧥', color: 'bg-green-100', categoryId: 3 },
+              { name: '신발', emoji: '👟', color: 'bg-yellow-100', categoryId: 4 },
             ].map((category) => (
               <Link
                 key={category.name}
-                to="/products"
+                to={`/products?categoryId=${category.categoryId}`}
                 className={`${category.color} rounded-lg p-8 text-center hover:shadow-lg transition-all`}
               >
                 <div className="text-5xl mb-3">{category.emoji}</div>
@@ -58,7 +46,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 특징 섹션 */}
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">왜 USINSA인가요?</h2>
@@ -66,49 +53,32 @@ export default function HomePage() {
             <div className="bg-white rounded-lg p-8 text-center shadow-sm">
               <div className="text-5xl mb-4">🚚</div>
               <h3 className="text-xl font-bold mb-3">빠른 배송</h3>
-              <p className="text-gray-600">
-                주문 후 1-2일 이내 배송으로 빠르게 받아보세요
-              </p>
+              <p className="text-gray-600">주문 후 1-2일 이내 배송으로 빠르게 받아보세요</p>
             </div>
             <div className="bg-white rounded-lg p-8 text-center shadow-sm">
               <div className="text-5xl mb-4">💯</div>
               <h3 className="text-xl font-bold mb-3">품질 보증</h3>
-              <p className="text-gray-600">
-                엄선된 브랜드의 정품만을 취급합니다
-              </p>
+              <p className="text-gray-600">엄선된 브랜드의 정품만을 취급합니다</p>
             </div>
             <div className="bg-white rounded-lg p-8 text-center shadow-sm">
               <div className="text-5xl mb-4">🔄</div>
               <h3 className="text-xl font-bold mb-3">간편한 반품</h3>
-              <p className="text-gray-600">
-                30일 이내 무료 반품 및 교환 서비스
-              </p>
+              <p className="text-gray-600">30일 이내 무료 반품 및 교환 서비스</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA 섹션 */}
       <section className="py-20 bg-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            지금 시작하세요
-          </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            회원가입하고 다양한 혜택을 받아보세요
-          </p>
+          <h2 className="text-4xl font-bold mb-6">지금 시작하세요</h2>
+          <p className="text-xl mb-8 text-blue-100">회원가입하고 다양한 혜택을 받아보세요</p>
           <div className="flex gap-4 justify-center">
-            <Link
-              to="/products"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
+            <Link to="/products" className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
               상품 둘러보기
             </Link>
             {!user && (
-              <Link
-                to="/signup"
-                className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
-              >
+              <Link to="/signup" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
                 회원가입하기
               </Link>
             )}
@@ -116,7 +86,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 푸터 */}
       <footer className="bg-gray-800 text-gray-300 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
