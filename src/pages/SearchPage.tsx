@@ -1,15 +1,45 @@
 import { useState, useEffect } from 'react'
 import { searchApi } from '@/api/searchApi'
-import type { ProductSearchDto } from '@/api/types'
+import type { ProductSearchDto, RankedProductDto } from '@/api/types'
 import { useAuth } from '@/auth/useAuth'
 import { useNavigate } from 'react-router-dom'
 
+// 키워드 검색(ProductSearchDto)과 RAG 검색(RankedProductDto) 결과를
+// 화면에서는 같은 카드 형태로 보여주기 위한 공통 타입
+type DisplayProduct = {
+  id: number
+  name: string
+  brandName: string
+  categoryName: string
+  price: number
+  likeCount?: number
+  clickCount?: number
+}
+
+function fromProductSearchDto(p: ProductSearchDto): DisplayProduct {
+  return { ...p }
+}
+
+function fromRankedProductDto(p: RankedProductDto): DisplayProduct {
+  return {
+    id: p.productId,
+    name: p.name,
+    brandName: p.brandName,
+    categoryName: p.categoryName,
+    price: p.price,
+  }
+}
+
+
 export default function SearchPage() {
   const [keyword, setKeyword] = useState('')
-  const [searchResults, setSearchResults] = useState<ProductSearchDto[]>([])
+  const [searchResults, setSearchResults] = useState<DisplayProduct[]>([])
+  const [ragMessage, setRagMessage] = useState<string | null>(null)
   const [trendingKeywords, setTrendingKeywords] = useState<string[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  // 키워드 검색이 0건이라 RAG로 자동 폴백 중인지 여부 (로딩 문구 구분용)
+  const [isFallback, setIsFallback] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -49,14 +79,29 @@ export default function SearchPage() {
 
     try {
       setLoading(true)
+      setIsFallback(false)
       setError(null)
-      const data = await searchApi.searchProducts(finalKeyword, user?.memberId)
-      setSearchResults(data)
+      setRagMessage(null)
+
+      // 1) 키워드 검색을 먼저 시도한다 (빠르고, Gemini 비용도 안 든다)
+      const keywordResults = await searchApi.searchProducts(finalKeyword, user?.memberId)
+
+      if (keywordResults.length > 0) {
+        setSearchResults(keywordResults.map(fromProductSearchDto))
+      } else {
+        // 2) 결과가 0건이면 붙여쓰기/오타/문장형 검색어일 수 있으니 RAG로 자동 폴백한다
+        setIsFallback(true)
+        const ragData = await searchApi.getRagRecommendation(finalKeyword)
+        setRagMessage(ragData.message)
+        setSearchResults(ragData.products.map(fromRankedProductDto))
+      }
+
       setKeyword(finalKeyword)
     } catch (err) {
       setError(err instanceof Error ? err.message : '검색에 실패했습니다.')
     } finally {
       setLoading(false)
+      setIsFallback(false)
     }
   }
 
@@ -81,7 +126,7 @@ export default function SearchPage() {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="상품을 검색해보세요"
+              placeholder="상품명을 검색해보세요 (오타나 붙여쓰기도 괜찮아요)"
               className="flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
@@ -165,7 +210,9 @@ export default function SearchPage() {
         {/* 로딩 */}
         {loading && (
           <div className="text-center py-12">
-            <div className="text-xl">검색 중...</div>
+            <div className="text-xl">
+              {isFallback ? '다른 방식으로 다시 찾는 중...' : '검색 중...'}
+            </div>
           </div>
         )}
 
@@ -173,6 +220,14 @@ export default function SearchPage() {
         {error && (
           <div className="text-center py-12">
             <div className="text-xl text-red-600">{error}</div>
+          </div>
+        )}
+
+        {/* RAG(AI) 추천 문구 */}
+        {!loading && ragMessage && (
+          <div className="mb-6 p-4 rounded-lg bg-indigo-50 border border-indigo-200">
+            <div className="text-sm font-bold text-indigo-600 mb-1">✨ AI 추천</div>
+            <p className="text-gray-800 whitespace-pre-line">{ragMessage}</p>
           </div>
         )}
 
@@ -186,7 +241,7 @@ export default function SearchPage() {
               {searchResults.map((product) => (
                 <div
                   key={product.id}
-                  onClick={() => handleProductClick(product.id!)}
+                  onClick={() => handleProductClick(product.id)}
                   className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                 >
                   <div className="h-48 bg-gray-200 flex items-center justify-center">
@@ -199,10 +254,13 @@ export default function SearchPage() {
                     <div className="text-sm text-gray-600 mb-2">{product.categoryName}</div>
                     <div className="text-xl font-bold mb-2">{product.price?.toLocaleString()}원</div>
 
-                    <div className="flex gap-2 text-sm text-gray-600">
-                      <span>좋아요 {product.likeCount}</span>
-                      <span>조회수 {product.clickCount}</span>
-                    </div>
+                    {/* RAG 결과는 좋아요/조회수 데이터가 없으므로 있을 때만 표시 */}
+                    {(product.likeCount !== undefined || product.clickCount !== undefined) && (
+                      <div className="flex gap-2 text-sm text-gray-600">
+                        <span>좋아요 {product.likeCount ?? 0}</span>
+                        <span>조회수 {product.clickCount ?? 0}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

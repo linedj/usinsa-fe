@@ -160,6 +160,22 @@ export type ProductSearchDto = {
   clickCount: number
 }
 
+// RAG(Hybrid Search + Gemini) 검색 결과 - 백엔드 RankedProductDto와 동일
+export type RankedProductDto = {
+  productId: number
+  name: string
+  brandName: string
+  categoryName: string
+  price: number
+  rrfScore: number
+}
+
+// GET /api/v1/search/rag 응답 - 백엔드 RagResponseDto와 동일
+export type RagResponseDto = {
+  message: string
+  products: RankedProductDto[]
+}
+
 // ─── Payment Types ────────────────────────────────────────────
 
 export type KakaoPayReadyResponse = {
