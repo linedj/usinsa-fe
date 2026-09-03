@@ -1,16 +1,9 @@
 import { useMemo } from 'react'
 import { useAuth } from '@/auth/useAuth'
-
-const formatEpoch = (epoch?: number) => {
-  if (!epoch) {
-    return '-'
-  }
-  const date = new Date(epoch * 1000)
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-}
+import { Link } from 'react-router-dom'
 
 export const DashboardPage = () => {
-  const { user, tokens, logout, refreshTokens, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const userRows = useMemo(
     () => [
@@ -22,16 +15,6 @@ export const DashboardPage = () => {
     [user],
   )
 
-  const tokenRows = useMemo(
-    () => [
-      { label: 'Access Token', value: tokens?.accessToken ?? '-' },
-      { label: 'Access Exp.', value: formatEpoch(tokens?.accessTokenExp) },
-      { label: 'Refresh Token', value: tokens?.refreshToken ?? '-' },
-      { label: 'Refresh Exp.', value: formatEpoch(tokens?.refreshTokenExp) },
-    ],
-    [tokens],
-  )
-
   return (
     <div className="page-container">
       <div className="card">
@@ -41,9 +24,6 @@ export const DashboardPage = () => {
             <h1>{user?.name ?? '알 수 없음'}</h1>
           </div>
           <div className="actions">
-            <button type="button" onClick={refreshTokens} disabled={loading}>
-              {loading ? '갱신 중...' : '토큰 갱신'}
-            </button>
             <button type="button" className="secondary" onClick={logout} disabled={loading}>
               로그아웃
             </button>
@@ -63,18 +43,35 @@ export const DashboardPage = () => {
         </section>
 
         <section>
-          <h2>토큰 정보</h2>
-          <dl>
-            {tokenRows.map((row) => (
-              <div key={row.label} className="row mono">
-                <dt>{row.label}</dt>
-                <dd>{row.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <h2>빠른 링크</h2>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Link
+              to="/products"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
+            >
+              <div className="font-semibold text-sm">상품 목록</div>
+            </Link>
+            <Link
+              to="/search"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
+            >
+              <div className="font-semibold text-sm">상품 검색</div>
+            </Link>
+            <Link
+              to="/cart"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
+            >
+              <div className="font-semibold text-sm">장바구니</div>
+            </Link>
+            <Link
+              to="/orders"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
+            >
+              <div className="font-semibold text-sm">주문 내역</div>
+            </Link>
+          </div>
         </section>
       </div>
     </div>
   )
 }
-

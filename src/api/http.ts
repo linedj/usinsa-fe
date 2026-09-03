@@ -1,6 +1,23 @@
 import axios from 'axios'
-import type { TokenPairEnvelope } from './types'
-import { tokenStorage } from '@/auth/tokenStorage'
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+
+/**
+ * 공통 axios 인스턴스
+ * withCredentials: true — HttpOnly 쿠키(JWT)를 모든 요청에 자동 포함
+ */
+export const http = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
+})
+
+// 토큰 갱신 전용 클라이언트 (인터셉터 무한루프 방지)
+const refreshClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
+})
 
 declare module 'axios' {
   interface AxiosRequestConfig {
@@ -8,77 +25,34 @@ declare module 'axios' {
   }
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
-
-export const http = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-const refreshClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-const requestNewTokens = async () => {
-  const refreshToken = tokenStorage.getTokens()?.refreshToken
-  if (!refreshToken) {
-    return null
-  }
-
-  try {
-    const { data } = await refreshClient.post<TokenPairEnvelope>(
-      '/api/v1/auth/refresh',
-      { refreshToken },
-    )
-    return data.data ?? null
-  } catch {
-    return null
-  }
-}
-
-http.interceptors.request.use((config) => {
-  const accessToken = tokenStorage.getTokens()?.accessToken
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
-  }
-  return config
-})
-
-let refreshPromise: Promise<string | null> | null = null
+let refreshPromise: Promise<boolean> | null = null
 
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response, config } = error
+
+    if (response?.data?.error?.message) {
+      error.message = response.data.error.message
+    }
+
     if (response?.status !== 401 || config.__isRetryRequest) {
       return Promise.reject(error)
     }
 
+    // 401 → Refresh 쿠키로 갱신 시도 (body 없이 쿠키만 사용)
     if (!refreshPromise) {
-      refreshPromise = (async () => {
-        const tokenPair = await requestNewTokens()
-        if (!tokenPair) {
-          tokenStorage.clear()
-          return null
-        }
-        tokenStorage.setTokens(tokenPair)
-        return tokenPair.accessToken ?? null
-      })()
+      refreshPromise = refreshClient
+        .post('/api/v1/auth/refresh')
+        .then((r) => r.data.success ?? false)
+        .catch(() => false)
+        .finally(() => { refreshPromise = null })
     }
 
-    const newAccessToken = await refreshPromise
-    if (!newAccessToken) {
-      return Promise.reject(error)
-    }
+    const ok = await refreshPromise
+    if (!ok) return Promise.reject(error)
 
     config.__isRetryRequest = true
-    config.headers.Authorization = `Bearer ${newAccessToken}`
     return http(config)
   },
 )
-

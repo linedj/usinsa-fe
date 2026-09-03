@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background: #ffffff;
 }
 
 .page-container {
@@ -14,11 +14,10 @@ body {
   width: 100%;
   max-width: 560px;
   background-color: #ffffff;
-  border-radius: 1.25rem;
+  border-radius: 2px;
   padding: 2.5rem;
-  box-shadow:
-    0 20px 45px rgba(15, 23, 42, 0.25),
-    0 0 0 1px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
+  border: 1px solid #e5e4e1;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -31,10 +30,19 @@ body {
   gap: 1rem;
 }
 
+.card-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
 .subtitle {
-  font-size: 0.95rem;
-  color: #64748b;
+  font-size: 0.8rem;
+  color: #767672;
   margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .form {
@@ -43,52 +51,65 @@ body {
   gap: 1.25rem;
 }
 
-label {
-  font-size: 0.95rem;
-  color: #0f172a;
+/* 아래 label/input/button 스타일은 .card 안(대시보드, OAuth 콜백 등
+   Tailwind 유틸리티 없이 순수 태그로 작성된 화면)에만 적용되도록 스코프를
+   좁혀둔다. 예전에는 전역 button/input 선택자였는데, 그 상태에서는
+   사이트 전체의 Tailwind 버튼들이 배경색을 따로 지정하지 않을 때마다
+   이 전역 스타일(검정 배경)이 새어 들어와 "검정 글씨 위에 검정 배경"처럼
+   보이지 않는 버튼이 되는 문제가 있었다. */
+.card label {
+  font-size: 0.9rem;
+  color: #111111;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-input {
-  border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
+.card input {
+  border-radius: 2px;
+  border: 1px solid #e5e4e1;
   padding: 0.85rem 1rem;
   font-size: 1rem;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease;
+  font-family: inherit;
 }
 
-input:focus {
-  border-color: #6366f1;
+.card input:focus {
+  border-color: #111111;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow: none;
 }
 
-button {
-  border: none;
-  border-radius: 0.85rem;
-  background: #111827;
+.card button {
+  border: 1px solid #111111;
+  border-radius: 2px;
+  background: #111111;
   color: #fff;
   padding: 0.9rem 1.4rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition: opacity 150ms ease;
+  font-family: inherit;
 }
 
-button:disabled {
-  opacity: 0.6;
+.card button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.card button:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-button.secondary {
-  background: #e2e8f0;
-  color: #0f172a;
+.card button.secondary {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #e5e4e1;
 }
 
 .error {
-  color: #dc2626;
+  color: #d9432e;
   font-size: 0.9rem;
   margin: 0;
 }
@@ -97,26 +118,26 @@ button.secondary {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f0f0ee;
 }
 
 .row:last-child {
   border-bottom: none;
 }
 
-dl {
+.card dl {
   margin: 0;
 }
 
-dt {
-  font-size: 0.9rem;
-  color: #64748b;
+.card dt {
+  font-size: 0.85rem;
+  color: #767672;
 }
 
-dd {
+.card dd {
   margin: 0;
   font-weight: 600;
-  color: #0f172a;
+  color: #111111;
   text-align: right;
 }
 
@@ -128,6 +149,13 @@ dd {
 .actions {
   display: flex;
   gap: 0.75rem;
+}
+
+.card section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.75rem;
 }
 
 @media (max-width: 640px) {
@@ -145,7 +173,7 @@ dd {
     flex-direction: column;
   }
 
-  button {
+  .card button {
     width: 100%;
   }
 }

@@ -1,5 +1,5 @@
 import { http } from './http'
-import type { paths, components } from '#backend/apiV1/schema'
+import type { components } from '#backend/apiV1/schema'
 
 type ApiResponse<T> = {
   success: boolean

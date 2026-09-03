@@ -116,6 +116,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/carts/guest/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateGuestCart"];
+        post?: never;
+        delete: operations["deleteGuestCartItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products": {
         parameters: {
             query?: never;
@@ -148,6 +164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/{productId}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getLikeStatus"];
+        put?: never;
+        post: operations["addLike"];
+        delete: operations["removeLike"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products/reindex": {
         parameters: {
             query?: never;
@@ -158,6 +190,66 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["rebuildIndex"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/kakao-pay/{orderId}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 준비
+         * @description 주문에 대한 카카오페이 결제를 준비합니다. (인증 필요)
+         */
+        post: operations["ready"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/kakao-pay/{orderId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 취소
+         * @description 카카오페이 결제를 취소합니다. (인증 필요)
+         */
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/kakao-pay/{orderId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 결제 승인
+         * @description 카카오페이 결제를 승인합니다. (인증 필요)
+         */
+        post: operations["approve"];
         delete?: never;
         options?: never;
         head?: never;
@@ -276,6 +368,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/carts/merge/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["mergeGuestCart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/carts/guest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getGuestCarts"];
+        put?: never;
+        post: operations["createGuestCart"];
+        delete: operations["deleteGuestCart"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 회원가입 */
+        post: operations["signup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/refresh": {
         parameters: {
             query?: never;
@@ -285,6 +426,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 토큰 갱신 (Refresh 쿠키 사용) */
         post: operations["refresh"];
         delete?: never;
         options?: never;
@@ -301,6 +443,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 로그아웃 */
         post: operations["logout"];
         delete?: never;
         options?: never;
@@ -317,7 +460,24 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 일반 로그인 */
         post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/product-like-cache/warmup/member/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["warmupMemberCache"];
         delete?: never;
         options?: never;
         head?: never;
@@ -372,6 +532,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/{productId}/like/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getLikeCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/category/{categoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProductsByCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orders/{id}": {
         parameters: {
             query?: never;
@@ -404,6 +596,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/carts/member/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getMemberCarts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 정보 조회 (쿠키 인증 상태 확인) */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/product-like-cache/invalidate/product/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["invalidateProductCache"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/product-like-cache/invalidate/member/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["invalidateMemberCache"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -428,11 +685,140 @@ export interface components {
             likeCount?: number;
             /** Format: int32 */
             clickCount?: number;
+            options?: components["schemas"]["Response"][];
         };
         UpdateReq: {
             receiverAddress?: string;
             receiverName?: string;
             receiverPhone?: string;
+        };
+        ReadyResponse: {
+            tid?: string;
+            next_redirect_app_url?: string;
+            next_redirect_mobile_url?: string;
+            next_redirect_pc_url?: string;
+            android_app_scheme?: string;
+            ios_app_scheme?: string;
+            /** Format: date-time */
+            created_at?: string;
+        };
+        Amount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        ApprovedCancelAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        CancelAvailableAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        CancelResponse: {
+            aid?: string;
+            tid?: string;
+            cid?: string;
+            status?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            payment_method_type?: string;
+            amount?: components["schemas"]["Amount"];
+            approved_cancel_amount?: components["schemas"]["ApprovedCancelAmount"];
+            canceled_amount?: components["schemas"]["CanceledAmount"];
+            cancel_available_amount?: components["schemas"]["CancelAvailableAmount"];
+            item_name?: string;
+            item_code?: string;
+            /** Format: int32 */
+            quantity?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            approved_at?: string;
+            /** Format: date-time */
+            canceled_at?: string;
+            payload?: string;
+        };
+        CanceledAmount: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            tax_free?: number;
+            /** Format: int32 */
+            vat?: number;
+            /** Format: int32 */
+            point?: number;
+            /** Format: int32 */
+            discount?: number;
+            /** Format: int32 */
+            green_deposit?: number;
+        };
+        ApproveResponse: {
+            aid?: string;
+            tid?: string;
+            cid?: string;
+            sid?: string;
+            partner_order_id?: string;
+            partner_user_id?: string;
+            payment_method_type?: string;
+            amount?: components["schemas"]["Amount"];
+            card_info?: components["schemas"]["CardInfo"];
+            item_name?: string;
+            item_code?: string;
+            /** Format: int32 */
+            quantity?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            approved_at?: string;
+            payload?: string;
+        };
+        CardInfo: {
+            purchase_corp?: string;
+            purchase_corp_code?: string;
+            issuer_corp?: string;
+            issuer_corp_code?: string;
+            kakaopay_purchase_corp?: string;
+            kakaopay_purchase_corp_code?: string;
+            kakaopay_issuer_corp?: string;
+            kakaopay_issuer_corp_code?: string;
+            bin?: string;
+            card_type?: string;
+            install_month?: string;
+            approved_id?: string;
+            card_mid?: string;
+            interest_free_install?: string;
+            installment_type?: string;
+            card_item_code?: string;
         };
         Request: {
             /** Format: int64 */
@@ -442,12 +828,29 @@ export interface components {
             /** Format: int32 */
             quantity?: number;
         };
-        RefreshReq: {
-            refreshToken?: string;
+        GuestCreateReq: {
+            /** Format: int64 */
+            productOptionId?: number;
+            /** Format: int32 */
+            count?: number;
+        };
+        SignupReq: {
+            email: string;
+            password: string;
+            passwordConfirm: string;
+            name: string;
+            nickname: string;
         };
         ErrorDetail: {
             code?: string;
             message?: string;
+        };
+        RsDataVoid: {
+            success?: boolean;
+            /** Format: int32 */
+            status?: number;
+            error?: components["schemas"]["ErrorDetail"];
+            data?: Record<string, never>;
         };
         RsDataTokenPair: {
             success?: boolean;
@@ -463,13 +866,6 @@ export interface components {
             accessExpEpochSec?: number;
             /** Format: int64 */
             refreshExpEpochSec?: number;
-        };
-        RsDataVoid: {
-            success?: boolean;
-            /** Format: int32 */
-            status?: number;
-            error?: components["schemas"]["ErrorDetail"];
-            data?: Record<string, never>;
         };
         LoginReq: {
             email?: string;
@@ -495,6 +891,13 @@ export interface components {
             error?: components["schemas"]["ErrorDetail"];
             data?: components["schemas"]["LoginRes"];
         };
+        RsDataString: {
+            success?: boolean;
+            /** Format: int32 */
+            status?: number;
+            error?: components["schemas"]["ErrorDetail"];
+            data?: string;
+        };
         ProductSearchDto: {
             /** Format: int64 */
             id?: number;
@@ -507,6 +910,25 @@ export interface components {
             likeCount?: number;
             /** Format: int32 */
             clickCount?: number;
+        };
+        StatusResponse: {
+            /** Format: int64 */
+            productId?: number;
+            liked?: boolean;
+        };
+        MeRes: {
+            /** Format: int64 */
+            memberId?: number;
+            email?: string;
+            name?: string;
+            nickname?: string;
+        };
+        RsDataMeRes: {
+            success?: boolean;
+            /** Format: int32 */
+            status?: number;
+            error?: components["schemas"]["ErrorDetail"];
+            data?: components["schemas"]["MeRes"];
         };
     };
     responses: never;
@@ -905,6 +1327,52 @@ export interface operations {
             };
         };
     };
+    updateGuestCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
+    deleteGuestCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getAllProducts: {
         parameters: {
             query?: never;
@@ -975,6 +1443,78 @@ export interface operations {
             };
         };
     };
+    getLikeStatus: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StatusResponse"];
+                };
+            };
+        };
+    };
+    addLike: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
+    removeLike: {
+        parameters: {
+            query: {
+                memberId: number;
+            };
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
     rebuildIndex: {
         parameters: {
             query?: never;
@@ -991,6 +1531,74 @@ export interface operations {
                 };
                 content: {
                     "*/*": string;
+                };
+            };
+        };
+    };
+    ready: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReadyResponse"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CancelResponse"];
+                };
+            };
+        };
+    };
+    approve: {
+        parameters: {
+            query: {
+                pgToken: string;
+            };
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApproveResponse"];
                 };
             };
         };
@@ -1281,7 +1889,49 @@ export interface operations {
             };
         };
     };
-    refresh: {
+    mergeGuestCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"][];
+                };
+            };
+        };
+    };
+    getGuestCarts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"][];
+                };
+            };
+        };
+    };
+    createGuestCart: {
         parameters: {
             query?: never;
             header?: never;
@@ -1290,9 +1940,71 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RefreshReq"];
+                "application/json": components["schemas"]["GuestCreateReq"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
+    deleteGuestCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignupReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataVoid"];
+                };
+            };
+        };
+    };
+    refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -1345,6 +2057,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RsDataLoginRes"];
+                };
+            };
+        };
+    };
+    warmupMemberCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataString"];
                 };
             };
         };
@@ -1414,6 +2148,50 @@ export interface operations {
             };
         };
     };
+    getLikeCount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": number;
+                };
+            };
+        };
+    };
+    getProductsByCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                categoryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"][];
+                };
+            };
+        };
+    };
     getOrder: {
         parameters: {
             query?: never;
@@ -1475,6 +2253,92 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getMemberCarts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Response"][];
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataMeRes"];
+                };
+            };
+        };
+    };
+    invalidateProductCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataString"];
+                };
+            };
+        };
+    };
+    invalidateMemberCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataString"];
+                };
             };
         };
     };
