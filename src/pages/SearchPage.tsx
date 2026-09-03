@@ -116,22 +116,22 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-content mx-auto px-4 md:px-8 py-10">
       <div className="max-w-4xl mx-auto">
         {/* 검색 입력 */}
-        <div className="mb-8">
-          <div className="flex gap-2">
+        <div className="mb-10">
+          <div className="flex border border-line focus-within:border-ink transition-colors">
             <input
               type="text"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="상품명을 검색해보세요 (오타나 붙여쓰기도 괜찮아요)"
-              className="flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-3 text-sm outline-none bg-transparent"
             />
             <button
               onClick={() => handleSearch()}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-ink text-paper text-sm font-semibold hover:opacity-85 transition-opacity"
             >
               검색
             </button>
@@ -141,9 +141,9 @@ export default function SearchPage() {
         {/* 인기 검색어 */}
         {!loading && searchResults.length === 0 && (
           <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-5">🔥 인기 검색어</h2>
+            <h2 className="text-xl font-black tracking-tightest mb-5">인기 검색어</h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {trendingKeywords.map((kw, index) => {
                 const isTop3 = index < 3
 
@@ -152,34 +152,33 @@ export default function SearchPage() {
                     key={index}
                     onClick={() => handleSearch(kw)}
                     className={`
-                      flex items-center justify-between px-4 py-3 rounded-lg border
-                      transition-all duration-200
+                      flex items-center justify-between px-4 py-3 bg-paper border transition-colors
                       ${isTop3
-                        ? 'bg-blue-50 border-blue-300 hover:bg-blue-100'
-                        : 'bg-white hover:bg-gray-50'}
+                        ? 'border-ink'
+                        : 'border-line hover:border-ink'}
                     `}
                   >
                     {/* 왼쪽: 순위 + 키워드 */}
                     <div className="flex items-center gap-3">
                       <span
                         className={`
-                          w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold
+                          w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0
                           ${isTop3
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-200 text-gray-700'}
+                            ? 'bg-ink text-paper'
+                            : 'bg-mist text-graphite'}
                         `}
                       >
                         {index + 1}
                       </span>
 
-                      <span className="font-medium text-gray-800">
+                      <span className="font-medium text-sm text-ink">
                         {kw}
                       </span>
                     </div>
 
                     {/* 오른쪽: Top 뱃지 */}
                     {isTop3 && (
-                      <span className="text-xs font-bold text-blue-600">
+                      <span className="text-[10px] font-bold text-signal uppercase tracking-wide shrink-0">
                         TOP
                       </span>
                     )}
@@ -191,14 +190,14 @@ export default function SearchPage() {
         )}
         {/* 최근 검색어 */}
         {!loading && searchResults.length === 0 && user && recentSearches.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">최근 검색어</h2>
+          <div className="mb-10">
+            <h2 className="text-lg font-bold mb-4">최근 검색어</h2>
             <div className="flex flex-wrap gap-2">
               {recentSearches.map((search, index) => (
                 <button
                   key={index}
                   onClick={() => handleSearch(search)}
-                  className="px-4 py-2 border rounded-full hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 bg-paper border border-line hover:border-ink transition-colors text-sm text-ink"
                 >
                   {search}
                 </button>
@@ -209,8 +208,8 @@ export default function SearchPage() {
 
         {/* 로딩 */}
         {loading && (
-          <div className="text-center py-12">
-            <div className="text-xl">
+          <div className="text-center py-16">
+            <div className="text-sm text-graphite">
               {isFallback ? '다른 방식으로 다시 찾는 중...' : '검색 중...'}
             </div>
           </div>
@@ -218,23 +217,23 @@ export default function SearchPage() {
 
         {/* 에러 */}
         {error && (
-          <div className="text-center py-12">
-            <div className="text-xl text-red-600">{error}</div>
+          <div className="text-center py-16">
+            <div className="text-sm text-signal">{error}</div>
           </div>
         )}
 
         {/* RAG(AI) 추천 문구 */}
         {!loading && ragMessage && (
-          <div className="mb-6 p-4 rounded-lg bg-indigo-50 border border-indigo-200">
-            <div className="text-sm font-bold text-indigo-600 mb-1">✨ AI 추천</div>
-            <p className="text-gray-800 whitespace-pre-line">{ragMessage}</p>
+          <div className="mb-6 p-4 border border-ink">
+            <div className="text-xs font-bold uppercase tracking-widest mb-1">AI 추천</div>
+            <p className="text-sm text-graphite whitespace-pre-line">{ragMessage}</p>
           </div>
         )}
 
         {/* 검색 결과 */}
         {!loading && searchResults.length > 0 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-lg font-bold mb-4">
               검색 결과 ({searchResults.length}개)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -242,26 +241,24 @@ export default function SearchPage() {
                 <div
                   key={product.id}
                   onClick={() => handleProductClick(product.id)}
-                  className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  className="cursor-pointer group"
                 >
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">이미지 없음</span>
+                  <div className="aspect-square bg-mist flex items-center justify-center mb-3">
+                    <span className="text-graphite text-xs">이미지 없음</span>
                   </div>
 
-                  <div className="p-4">
-                    <div className="text-sm text-gray-500 mb-1">{product.brandName}</div>
-                    <h3 className="text-lg font-semibold mb-2 line-clamp-2">{product.name}</h3>
-                    <div className="text-sm text-gray-600 mb-2">{product.categoryName}</div>
-                    <div className="text-xl font-bold mb-2">{product.price?.toLocaleString()}원</div>
+                  <div className="text-xs text-graphite mb-1">{product.brandName}</div>
+                  <h3 className="text-sm font-medium mb-2 line-clamp-2">{product.name}</h3>
+                  <div className="text-xs text-graphite mb-2">{product.categoryName}</div>
+                  <div className="text-base font-bold mb-2">{product.price?.toLocaleString()}원</div>
 
-                    {/* RAG 결과는 좋아요/조회수 데이터가 없으므로 있을 때만 표시 */}
-                    {(product.likeCount !== undefined || product.clickCount !== undefined) && (
-                      <div className="flex gap-2 text-sm text-gray-600">
-                        <span>좋아요 {product.likeCount ?? 0}</span>
-                        <span>조회수 {product.clickCount ?? 0}</span>
-                      </div>
-                    )}
-                  </div>
+                  {/* RAG 결과는 좋아요/조회수 데이터가 없으므로 있을 때만 표시 */}
+                  {(product.likeCount !== undefined || product.clickCount !== undefined) && (
+                    <div className="flex gap-3 text-xs text-graphite">
+                      <span>좋아요 {product.likeCount ?? 0}</span>
+                      <span>조회수 {product.clickCount ?? 0}</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -270,8 +267,8 @@ export default function SearchPage() {
 
         {/* 검색 결과 없음 */}
         {!loading && keyword && searchResults.length === 0 && !error && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-xl">'{keyword}'에 대한 검색 결과가 없습니다.</p>
+          <div className="text-center py-16">
+            <p className="text-graphite text-sm">'{keyword}'에 대한 검색 결과가 없습니다.</p>
           </div>
         )}
       </div>

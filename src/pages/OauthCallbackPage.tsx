@@ -38,7 +38,7 @@ export const OauthCallbackPage = () => {
       <div className="page-container">
         <div className="card">
           <h1>로그인 실패</h1>
-          <p style={{ marginTop: '1rem', color: '#c00' }}>{error}</p>
+          <p className="error" style={{ marginTop: '1rem' }}>{error}</p>
           <p>잠시 후 로그인 페이지로 이동합니다...</p>
         </div>
       </div>

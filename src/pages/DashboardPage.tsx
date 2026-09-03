@@ -44,34 +44,30 @@ export const DashboardPage = () => {
 
         <section>
           <h2>빠른 링크</h2>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-2 gap-3 mt-4">
             <Link
               to="/products"
-              className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
             >
-              <div className="text-2xl mb-2">🛍️</div>
-              <div className="font-semibold">상품 목록</div>
+              <div className="font-semibold text-sm">상품 목록</div>
             </Link>
             <Link
               to="/search"
-              className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
             >
-              <div className="text-2xl mb-2">🔍</div>
-              <div className="font-semibold">상품 검색</div>
+              <div className="font-semibold text-sm">상품 검색</div>
             </Link>
             <Link
               to="/cart"
-              className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
             >
-              <div className="text-2xl mb-2">🛒</div>
-              <div className="font-semibold">장바구니</div>
+              <div className="font-semibold text-sm">장바구니</div>
             </Link>
             <Link
               to="/orders"
-              className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="p-4 border border-line hover:border-ink transition-colors text-center"
             >
-              <div className="text-2xl mb-2">📦</div>
-              <div className="font-semibold">주문 내역</div>
+              <div className="font-semibold text-sm">주문 내역</div>
             </Link>
           </div>
         </section>

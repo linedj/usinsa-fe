@@ -25,6 +25,20 @@ export type ApiSuccessResponse<T> = {
   data?: T
 }
 
+// ─── Category Types ───────────────────────────────────────────
+// 백엔드가 여러 도메인에서 공용 Response DTO를 재사용해 categoryName/name이
+// 함께 내려오는 경우가 있어, 화면에서는 두 필드를 모두 대비해 표시한다.
+
+export type CategoryCreateRequest = {
+  name: string
+}
+
+export type CategoryResponse = {
+  id: number
+  name?: string
+  categoryName?: string
+}
+
 // ─── Product Types ────────────────────────────────────────────
 
 export type ProductCreateRequest = {

@@ -21,15 +21,20 @@ export default function ApiTestPage() {
     }
   }
 
+  const primaryBtn =
+    'px-4 py-2 bg-ink text-paper text-sm font-semibold hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity'
+  const secondaryBtn =
+    'px-4 py-2 border border-ink text-ink text-sm font-semibold hover:bg-mist disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-content mx-auto px-4 md:px-8 py-10">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">API 테스트</h1>
+        <h1 className="text-3xl font-black tracking-tightest mb-8">API 테스트</h1>
 
         <div className="space-y-6">
           {/* Product API Tests */}
-          <div className="border rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Product API</h2>
+          <div className="border border-line p-6">
+            <h2 className="text-lg font-bold mb-4">Product API</h2>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() =>
@@ -39,7 +44,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                className={primaryBtn}
               >
                 전체 상품 조회
               </button>
@@ -57,7 +62,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                className={secondaryBtn}
               >
                 상품 생성
               </button>
@@ -65,8 +70,8 @@ export default function ApiTestPage() {
           </div>
 
           {/* Cart API Tests */}
-          <div className="border rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Cart API</h2>
+          <div className="border border-line p-6">
+            <h2 className="text-lg font-bold mb-4">Cart API</h2>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() =>
@@ -76,7 +81,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                className={primaryBtn}
               >
                 비회원 장바구니 조회
               </button>
@@ -92,7 +97,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                className={secondaryBtn}
               >
                 비회원 장바구니 추가
               </button>
@@ -100,8 +105,8 @@ export default function ApiTestPage() {
           </div>
 
           {/* Order API Tests */}
-          <div className="border rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Order API</h2>
+          <div className="border border-line p-6">
+            <h2 className="text-lg font-bold mb-4">Order API</h2>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() =>
@@ -111,7 +116,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                className={primaryBtn}
               >
                 전체 주문 조회
               </button>
@@ -129,7 +134,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                className={secondaryBtn}
               >
                 주문 생성
               </button>
@@ -137,8 +142,8 @@ export default function ApiTestPage() {
           </div>
 
           {/* Search API Tests */}
-          <div className="border rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Search API</h2>
+          <div className="border border-line p-6">
+            <h2 className="text-lg font-bold mb-4">Search API</h2>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() =>
@@ -148,7 +153,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                className={primaryBtn}
               >
                 상품 검색
               </button>
@@ -161,7 +166,7 @@ export default function ApiTestPage() {
                   })
                 }
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                className={primaryBtn}
               >
                 인기 검색어 조회
               </button>
@@ -169,8 +174,8 @@ export default function ApiTestPage() {
           </div>
 
           {/* Result Display */}
-          <div className="border rounded-lg p-6 bg-gray-50">
-            <h2 className="text-xl font-bold mb-4">테스트 결과</h2>
+          <div className="border border-line p-6 bg-mist">
+            <h2 className="text-lg font-bold mb-4">테스트 결과</h2>
             <pre className="whitespace-pre-wrap font-mono text-sm">{result || '테스트를 실행하세요'}</pre>
           </div>
         </div>

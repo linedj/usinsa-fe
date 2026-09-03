@@ -1,21 +1,45 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/auth/useAuth'
+import { productApi } from '@/api/productApi'
+import type { ProductResponse } from '@/api/types'
 
 export default function HomePage() {
   const { user } = useAuth()
+  const [picks, setPicks] = useState<ProductResponse[]>([])
+
+  useEffect(() => {
+    productApi
+      .getAllProducts()
+      .then((data) => setPicks(data.slice(0, 5)))
+      .catch(() => setPicks([]))
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">USINSA</h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">당신의 스타일을 완성하는 쇼핑몰</p>
-          <div className="flex gap-4 justify-center">
-            <Link to="/products" className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
-              쇼핑하기
+    <div>
+      {/* 히어로 - 큰 여백과 절제된 타이포로 무신사st 미니멀 톤 */}
+      <section className="border-b border-line">
+        <div className="max-w-content mx-auto px-4 md:px-8 py-20 md:py-28">
+          <p className="text-xs font-bold uppercase tracking-widest text-graphite mb-5">
+            2026 Fall / Winter
+          </p>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tightest leading-[0.95] mb-8 max-w-3xl">
+            스타일은 취향이고,
+            <br />
+            쇼핑은 USINSA다.
+          </h1>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              to="/products"
+              className="bg-ink text-paper px-7 py-3.5 text-sm font-semibold hover:opacity-80 transition-opacity"
+            >
+              전체 상품 보기
             </Link>
             {!user && (
-              <Link to="/signup" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              <Link
+                to="/signup"
+                className="border border-ink px-7 py-3.5 text-sm font-semibold hover:bg-ink hover:text-paper transition-colors"
+              >
                 회원가입
               </Link>
             )}
@@ -23,106 +47,80 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">인기 카테고리</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { name: '상의', emoji: '👕', color: 'bg-red-100', categoryId: 1 },
-              { name: '하의', emoji: '👖', color: 'bg-blue-100', categoryId: 2 },
-              { name: '아우터', emoji: '🧥', color: 'bg-green-100', categoryId: 3 },
-              { name: '신발', emoji: '👟', color: 'bg-yellow-100', categoryId: 4 },
-            ].map((category) => (
-              <Link
-                key={category.name}
-                to={`/products?categoryId=${category.categoryId}`}
-                className={`${category.color} rounded-lg p-8 text-center hover:shadow-lg transition-all`}
-              >
-                <div className="text-5xl mb-3">{category.emoji}</div>
-                <div className="font-semibold text-lg">{category.name}</div>
+      {/* 추천 상품 - 카테고리 선택은 상단 네비게이션 바에서 처리하므로
+          메인 화면은 실제 상품 위주로 구성한다 */}
+      {picks.length > 0 && (
+        <section className="max-w-content mx-auto px-4 md:px-8 py-16 md:py-20">
+          <div className="flex items-baseline justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tightest">지금 인기있는 상품</h2>
+            <Link to="/products" className="text-sm font-medium text-graphite hover:text-ink transition-colors">
+              전체 보기 →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            {picks.map((product) => (
+              <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <div className="aspect-square bg-mist mb-3 flex items-center justify-center overflow-hidden">
+                  <span className="text-graphite text-xs">이미지 없음</span>
+                </div>
+                <div className="text-xs text-graphite mb-1 truncate">{product.brandName}</div>
+                <div className="text-sm font-medium mb-1 line-clamp-2 group-hover:text-graphite transition-colors">
+                  {product.name}
+                </div>
+                <div className="text-sm font-bold">{product.price?.toLocaleString()}원</div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">왜 USINSA인가요?</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg p-8 text-center shadow-sm">
-              <div className="text-5xl mb-4">🚚</div>
-              <h3 className="text-xl font-bold mb-3">빠른 배송</h3>
-              <p className="text-gray-600">주문 후 1-2일 이내 배송으로 빠르게 받아보세요</p>
+      {/* 왜 USINSA인가 */}
+      <section className="bg-mist border-t border-line">
+        <div className="max-w-content mx-auto px-4 md:px-8 py-16 md:py-20">
+          <h2 className="text-2xl md:text-3xl font-black tracking-tightest mb-12">왜 USINSA인가요</h2>
+          <div className="grid md:grid-cols-3 gap-10">
+            <div>
+              <div className="text-xs font-mono text-graphite mb-3">01</div>
+              <h3 className="text-lg font-bold mb-2">빠른 배송</h3>
+              <p className="text-sm text-graphite leading-relaxed">주문 후 1-2일 이내 배송으로 빠르게 받아보세요.</p>
             </div>
-            <div className="bg-white rounded-lg p-8 text-center shadow-sm">
-              <div className="text-5xl mb-4">💯</div>
-              <h3 className="text-xl font-bold mb-3">품질 보증</h3>
-              <p className="text-gray-600">엄선된 브랜드의 정품만을 취급합니다</p>
+            <div>
+              <div className="text-xs font-mono text-graphite mb-3">02</div>
+              <h3 className="text-lg font-bold mb-2">품질 보증</h3>
+              <p className="text-sm text-graphite leading-relaxed">엄선된 브랜드의 정품만을 취급합니다.</p>
             </div>
-            <div className="bg-white rounded-lg p-8 text-center shadow-sm">
-              <div className="text-5xl mb-4">🔄</div>
-              <h3 className="text-xl font-bold mb-3">간편한 반품</h3>
-              <p className="text-gray-600">30일 이내 무료 반품 및 교환 서비스</p>
+            <div>
+              <div className="text-xs font-mono text-graphite mb-3">03</div>
+              <h3 className="text-lg font-bold mb-2">간편한 반품</h3>
+              <p className="text-sm text-graphite leading-relaxed">30일 이내 무료 반품 및 교환 서비스.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">지금 시작하세요</h2>
-          <p className="text-xl mb-8 text-blue-100">회원가입하고 다양한 혜택을 받아보세요</p>
-          <div className="flex gap-4 justify-center">
-            <Link to="/products" className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+      {/* CTA */}
+      <section className="border-t border-line">
+        <div className="max-w-content mx-auto px-4 md:px-8 py-16 md:py-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-black tracking-tightest mb-5">지금 시작하세요</h2>
+          <p className="text-graphite mb-8">회원가입하고 다양한 혜택을 받아보세요.</p>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link
+              to="/products"
+              className="bg-ink text-paper px-7 py-3.5 text-sm font-semibold hover:opacity-80 transition-opacity"
+            >
               상품 둘러보기
             </Link>
             {!user && (
-              <Link to="/signup" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              <Link
+                to="/signup"
+                className="border border-ink px-7 py-3.5 text-sm font-semibold hover:bg-ink hover:text-paper transition-colors"
+              >
                 회원가입하기
               </Link>
             )}
           </div>
         </div>
       </section>
-
-      <footer className="bg-gray-800 text-gray-300 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="text-2xl font-bold text-white mb-4">USINSA</div>
-              <p className="text-sm">당신의 스타일을 완성하는 쇼핑몰</p>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">쇼핑</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/products" className="hover:text-white">전체 상품</Link></li>
-                <li><Link to="/search" className="hover:text-white">검색</Link></li>
-                <li><Link to="/cart" className="hover:text-white">장바구니</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">고객지원</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white">FAQ</a></li>
-                <li><a href="#" className="hover:text-white">배송 정보</a></li>
-                <li><a href="#" className="hover:text-white">반품/교환</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">회사 정보</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white">회사 소개</a></li>
-                <li><a href="#" className="hover:text-white">이용약관</a></li>
-                <li><a href="#" className="hover:text-white">개인정보처리방침</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm">
-            <p>&copy; 2026 USINSA. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -85,38 +85,37 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl">로딩 중...</div>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-sm text-graphite">로딩 중...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-red-600">{error}</div>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-sm text-signal">{error}</div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="max-w-6xl mx-auto px-4 md:px-8 py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">장바구니</h1>
+        <h1 className="text-3xl font-black tracking-tightest">장바구니</h1>
         {carts.length > 0 && (
-          <button onClick={handleDeleteAll} className="text-red-600 hover:text-red-700 text-sm">
+          <button onClick={handleDeleteAll} className="bg-transparent text-signal hover:opacity-70 text-sm font-medium">
             전체 삭제
           </button>
         )}
       </div>
 
       {carts.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">🛒</div>
-          <p className="text-gray-500 text-xl mb-6">장바구니가 비어있습니다.</p>
+        <div className="text-center py-24 border border-line">
+          <p className="text-graphite text-sm mb-6">장바구니가 비어있습니다.</p>
           <button
             onClick={() => navigate('/products')}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-ink text-paper px-8 py-3 text-sm font-semibold hover:opacity-85 transition-opacity"
           >
             쇼핑 계속하기
           </button>
@@ -125,52 +124,52 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {carts.map((cart) => (
-              <div key={cart.id} className="border rounded-lg p-6 bg-white shadow-sm">
+              <div key={cart.id} className="border border-line p-6">
                 <div className="flex gap-6">
-                  <div className="w-32 h-32 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-400 text-sm">이미지</span>
+                  <div className="w-32 h-32 bg-mist flex items-center justify-center flex-shrink-0">
+                    <span className="text-graphite text-xs">이미지</span>
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm text-gray-500 mb-1">{cart.productInfo.brandName}</div>
-                    <h3 className="font-semibold text-lg mb-2">{cart.productInfo.productName}</h3>
-                    <div className="text-sm text-gray-600 mb-3">
+                    <div className="text-xs text-graphite mb-1">{cart.productInfo.brandName}</div>
+                    <h3 className="font-semibold mb-2">{cart.productInfo.productName}</h3>
+                    <div className="text-sm text-graphite mb-3">
                       <span>옵션: {cart.productInfo.optionName}</span>
                       {cart.productInfo.stock !== null && (
-                        <span className="ml-4 text-gray-500">재고: {cart.productInfo.stock}개</span>
+                        <span className="ml-4">재고: {cart.productInfo.stock}개</span>
                       )}
                     </div>
-                    <div className="text-lg font-bold text-blue-600">
+                    <div className="text-lg font-bold">
                       {cart.productInfo.price.toLocaleString()}원
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-between">
                     <button
                       onClick={() => handleDelete(cart.id)}
-                      className="text-gray-400 hover:text-red-600 text-xl"
+                      className="bg-transparent text-graphite hover:text-signal text-lg"
                       aria-label="삭제"
                     >
                       ✕
                     </button>
                     <div className="flex flex-col items-end gap-4">
-                      <div className="flex items-center gap-2 border rounded">
+                      <div className="flex items-center gap-2 border border-line">
                         <button
                           onClick={() => handleUpdateQuantity(cart.id, cart.count - 1)}
                           disabled={cart.count <= 1}
-                          className="w-9 h-9 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="w-9 h-9 bg-paper hover:bg-mist disabled:opacity-30 disabled:cursor-not-allowed"
                           aria-label="수량 감소"
                         >
-                          -
+                          −
                         </button>
-                        <span className="w-12 text-center font-semibold">{cart.count}</span>
+                        <span className="w-12 text-center font-semibold text-sm">{cart.count}</span>
                         <button
                           onClick={() => handleUpdateQuantity(cart.id, cart.count + 1)}
-                          className="w-9 h-9 hover:bg-gray-100"
+                          className="w-9 h-9 bg-paper hover:bg-mist"
                           aria-label="수량 증가"
                         >
                           +
                         </button>
                       </div>
-                      <div className="text-xl font-bold">{cart.totalPrice.toLocaleString()}원</div>
+                      <div className="text-lg font-bold">{cart.totalPrice.toLocaleString()}원</div>
                     </div>
                   </div>
                 </div>
@@ -179,41 +178,41 @@ export default function CartPage() {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="border rounded-lg p-6 bg-white shadow-sm sticky top-4">
-              <h2 className="text-xl font-bold mb-6">주문 요약</h2>
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-600">
+            <div className="border border-line p-6 sticky top-24">
+              <h2 className="text-lg font-bold mb-6">주문 요약</h2>
+              <div className="space-y-3 mb-6 text-sm">
+                <div className="flex justify-between text-graphite">
                   <span>상품 수</span>
                   <span>{carts.length}개</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-graphite">
                   <span>총 수량</span>
                   <span>{totalCount}개</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-graphite">
                   <span>상품 금액</span>
                   <span>{totalAmount.toLocaleString()}원</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-graphite">
                   <span>배송비</span>
-                  <span className="text-green-600">무료</span>
+                  <span>무료</span>
                 </div>
               </div>
-              <div className="border-t pt-4 mb-6">
-                <div className="flex justify-between items-center text-xl font-bold">
+              <div className="border-t border-line pt-4 mb-6">
+                <div className="flex justify-between items-center text-base font-bold">
                   <span>총 결제금액</span>
-                  <span className="text-blue-600 text-2xl">{totalAmount.toLocaleString()}원</span>
+                  <span className="text-xl">{totalAmount.toLocaleString()}원</span>
                 </div>
               </div>
               <button
                 onClick={handleCheckout}
-                className="w-full bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full bg-ink text-paper py-4 text-base font-semibold hover:opacity-85 transition-opacity"
               >
                 주문하기
               </button>
               <button
                 onClick={() => navigate('/products')}
-                className="w-full mt-3 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full mt-3 bg-paper border border-line text-ink py-3 text-sm font-medium hover:border-ink transition-colors"
               >
                 쇼핑 계속하기
               </button>
